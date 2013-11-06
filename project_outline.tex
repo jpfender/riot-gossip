@@ -79,40 +79,6 @@ clocks. Thus, the overall structure of our project looks like this:
 
 \section*{Timeline}
 \label{sec:timeline}
-% \resizebox{\textwidth}{!}{%
-%   \begin{tikzpicture}[snake=zigzag, line before snake = 5mm, line after snake = 5mm]
-%   %draw horizontal line   
-%   \draw (0,0) -- (2,0);
-%   \draw[snake] (2,0) -- (5,0);
-%   \draw (5,0) -- (7,0);
-%   \draw[snake] (7,0) -- (15,0);
-%   \draw (15,0) -- (17,0);
-%   \draw[snake] (17,0) -- (20,0);
-%   \draw (20,0) -- (34,0);
-%   \draw[snake] (34,0) -- (41,0);
-%   \draw (41,0) -- (43,0);
-%   \draw[snake] (43,0) -- (46,0);
-
-%   %draw vertical lines
-%   \foreach \x in {0,2,5,7,15,17,20,34,41,43,46}
-%      \draw (\x cm,3pt) -- (\x cm,-3pt);
-
-%   %draw nodes
-%   \draw (0,0) node[below=3pt] {$ 0 $} node[above=3pt] {};
-%   \draw (2,0) node[below=3pt] {$ 2 $} node[above=3pt] {Milestone 1};
-%   \draw (5,0) node[below=3pt] {$ 5 $} node[above=3pt] {};
-%   \draw (7,0) node[below=3pt] {$ 7 $} node[above=3pt] {Milestone 2};
-%   \draw (15,0) node[below=3pt] {$ 15 $} node[above=3pt] {};
-%   \draw (17,0) node[below=3pt] {$ 17 $} node[above=3pt] {Milestone 3};
-%   \draw (20,0) node[below=3pt] {$ 20 $} node[above=3pt] {};
-%   \draw (34,0) node[below=3pt] {$ 34 $} node[above=3pt] {Milestone 4};
-%   \draw (41,0) node[below=3pt] {$ 41 $} node[above=3pt] {};
-%   \draw (43,0) node[below=3pt] {$ 43 $} node[above=3pt] {Milestone 5};
-%   \draw (46,0) node[below=3pt] {$ 46 $} node[above=3pt] {};
-
-%   \end{tikzpicture}
-% }
-
 \pgfmathsetmacro{\mintime}{0}
 \pgfmathsetmacro{\maxtime}{13}
 \newcommand{\timeunit}{Weeks}
@@ -122,7 +88,6 @@ clocks. Thus, the overall structure of our project looks like this:
 \newcounter{itemnumber}
 \setcounter{itemnumber}{0}
 \newcommand{\lastnode}{n-0}
-% ============================= 
 
 \newcommand{\timeentry}[2]{% time, description
 \stepcounter{itemnumber}
@@ -140,7 +105,6 @@ clocks. Thus, the overall structure of our project looks like this:
     \pgfmathsetmacro{\yposition}{\YCoord/28.452755}
     \foreach \x in {1,...,\theitemnumber}
     {   \pgfmathsetmacro{\timeposition}{\yposition/(\maxtime-\mintime)*\csname nodetime\x \endcsname}
-        %\node[right] at (0,\timeposition) {\yposition};
         \draw (0,\timeposition) -- (0.5,\timeposition) -- ($(n-\x.west)-(0.5,0)$) -- (n-\x.west);
     }
     \foreach \x in {0,...,\timeintervals}
@@ -152,15 +116,10 @@ clocks. Thus, the overall structure of our project looks like this:
 
 \begin{tikzpicture}
 \node[inner sep=0] (n-0) at (\scaleitemseparation,0) {};
-% \timeentry{1.2}{}
 \timeentry{1.5}{Milestone 1: Protocol description for gossiping}
-% \timeentry{1.7}{}
 \timeentry{3.1}{Milestone 2: Implementation of gossiping}
-% \timeentry{3.3}{}
 \timeentry{3.6}{Milestone 3: Protocol description for leader election}
-% \timeentry{5.6}{}
 \timeentry{6.6}{Milestone 4: Implementation of leader election}
-% \timeentry{7.1}{}
 \timeentry{7.4}{Milestone 5: Protocol description for time
 synchronization}
 \timeentry{13}{Milestone 6: Implementation of time synchronization}
