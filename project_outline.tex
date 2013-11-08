@@ -77,6 +77,58 @@ clocks. Thus, the overall structure of our project looks like this:
   \item \textbf{Phase 3}: Time Synchronization
 \end{itemize}
 
+We further divide these phases into concrete milestones with completion
+times attached to them.
+
+\newpage
+
+\section*{Milestones}
+\label{sec:milestones}
+
+\subsection*{Protocol description for gossiping -- 2-5 days}
+\label{sub:protocol_gossiping}
+ We aim to have a complete description of how our gossiping protocol is
+ supposed to work finished before we start implementing it. This
+ includes specifications for message formats and a generalized
+ description of how the gossiping nodes will communicate. If possible,
+ we will also design test cases during this phase.
+
+\subsection*{Implementation of gossiping -- 2-10 days}
+\label{sub:implementation_gossiping}
+Once we have a formal specification of our gossiping protocol, we will
+start implementing it. It is possible that we might have to adjust our
+specifications if unforeseen issues arise during implementation.
+
+\subsection*{Protocol description for leader election -- 2-5 days}
+\label{sub:protocol_leader_election}
+Once our gossiping platform is usable, we will develop specifications
+for a leader election scheme based on it. An important aspect of this is
+that users should be free to choose the metric(s) used for leader
+election, so this aspect should be specified in a modular fashion.
+
+\subsection*{Implementation of leader election -- 2-3 weeks}
+\label{sub:implementation_leader_election}
+We will implement a leader election application according to our
+specifications developed in. As before, changes to the specification in
+case of unforeseen issues are possible. An important aspect during
+implementation will be the modularity of the leader election scheme in
+regard to election metrics. The leader election application will serve
+as a proof of concept that our gossiping platform is viable.
+
+\subsection*{Protocol description for time synchronization -- 2-5 days}
+\label{sub:protocol_time_synch}
+Once we have achieved leader election via gossiping, we will develop
+specifications for a time synchronization protocol that uses both the
+gossiping platform and our leader election application to achieve
+synchronization.
+
+\subsection*{Implementation of time synchronization -- remaining time}
+\label{sub:implementation_time_synchronization}
+We will use the remaining project time to implement the time
+synchronization application, as this task is potentially quite complex.
+
+\newpage
+
 \section*{Timeline}
 \label{sec:timeline}
 \pgfmathsetmacro{\mintime}{0}
