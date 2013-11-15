@@ -1,0 +1,281 @@
+\documentclass[ngerman]{beamer}
+
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usetikzlibrary{spy,matrix}
+\usepackage[style=mla, backend=bibtex]{biblatex}
+\bibliography{storm}
+
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{setspace}
+\defaultfontfeatures{Mapping=tex-text}
+\setmonofont[Mapping={}, Scale=MatchLowercase]{DejaVu Sans Mono}
+\setsansfont[Scale=MatchLowercase]{Linux Biolinum O}
+\setmainfont[]{Linux Libertine O}
+
+\newbox\mytempbox
+\newdimen\mytempdimen
+\newcommand\includegraphicscopyright[3][]{%
+  \leavevmode\vbox{\vskip3pt\raggedright\setbox\mytempbox=\hbox{%
+  \includegraphics[#1]{#2}}%
+    \mytempdimen=\wd\mytempbox\box\mytempbox\par\vskip1pt%
+    \fontsize{3}{3.5}\selectfont{\color{black!25}{\vbox{\hsize=\mytempdimen#3}}}\vskip3pt%
+}}
+
+\newcommand\prelim[1]{\small }
+
+\newcommand\strColor[1]{\color{beamer@blendedblue}{#1}}
+
+\newcommand\sect[1]{\begin{center}\huge\strColor{#1}\end{center}}
+
+\setbeamertemplate{navigation symbols}{}
+
+\pagestyle{fancy}
+\rhead{\vspace{.3em}\includegraphics[width=10em]{assets/FULogo_RGB.eps}}
+\cfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+\lstset{language=C}
+\lstset{basicstyle=\footnotesize\ttfamily}
+\lstset{breaklines=true}
+\lstset{keywordstyle=\color{purple}}
+
+\usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows}
+
+\newdimen\XCoord
+\newdimen\YCoord
+
+\newcommand*{\ExtractCoordinate}[1]{\path (#1); \pgfgetlastxy{\XCoord}{\YCoord};}%
+
+\title{Gossiping on Mobile Devices}
+\author{Michael Krause, Robin Nehls, Jakob Pfender}
+\institute{FU Berlin\\Institut für Informatik\\Softwareprojekt
+Mobilkommunikation}
+\date{19. November 2013}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\frame{
+  \huge{Project topic}
+
+}
+
+\frame{
+\frametitle{Project topic}
+\begin{itemize}
+  \item Implement gossiping for RIOT-OS \scriptsize(Revolutionary Internet
+    of Things OS)\normalsize\\on application level
+  \item Used for keeping, disseminating and acting on information in a
+    (P2P) network
+  \item Nodes periodically pair off with random other nodes and share
+    information
+\end{itemize}
+}
+
+\frame{
+  \huge{Objectives}
+
+}
+
+\frame{
+    \frametitle{Objectives}
+    \begin{itemize}
+      \item Modularity
+      \item Applications should be able to ``plug into`` gossiping layer
+      \item Implement sample applications using our gossiping layer
+    \end{itemize}
+}
+
+\frame{
+  \huge{Work schedule}
+
+}
+
+\frame{
+    \frametitle{Work schedule -- Three phases}
+    \begin{itemize}
+      \item \textbf{Phase 1:} Gossiping
+      \item \textbf{Phase 2:} Leader Election
+      \item \textbf{Phase 3:} Time Synchronization
+    \end{itemize}
+     
+}
+
+\frame{
+  \huge{Milestones}
+
+}
+
+\frame{
+    \frametitle{Milestones -- Gossiping}
+    \textbf{Protocol description -- 2-5 days}
+    \begin{itemize}
+      \item Specification of message formats
+      \item How do we communicate?
+      \item Test cases
+    \end{itemize}
+    \textbf{Implementation -- 2-10 days}
+    \begin{itemize}
+      \item Implement according to specification
+      \item Only adjust specification if we run into serious problems
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Milestones -- Leader election}
+    \textbf{Protocol description -- 2-5 days}
+    \begin{itemize}
+      \item Define metrics for leader election
+      \item Users should be able to choose their own metrics
+      \item Modularity
+    \end{itemize}
+    \textbf{Implementation -- 2-3 weeks}
+    \begin{itemize}
+      \item Implement according to specification
+      \item Only adjust specification if we run into serious problems
+      \item Proof of concept for gossiping platform
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Milestones -- Time synchronization}
+    \textbf{Protocol description -- 2-5 days}
+    \begin{itemize}
+      \item Use both gossiping platform and leader election
+    \end{itemize}
+    \textbf{Implementation -- remaining time}
+    \begin{itemize}
+      \item Probably very complex task
+      \item Use remainder of project time to implement as much as
+        possible
+    \end{itemize}
+}
+
+\frame{
+  \huge{Timeline}
+
+}
+
+\begin{frame}[fragile]
+  \frametitle{Timeline}
+    \pgfmathsetmacro{\mintime}{0}
+    \pgfmathsetmacro{\maxtime}{13}
+    \newcommand{\timeunit}{Weeks}
+    \pgfmathtruncatemacro{\timeintervals}{13}
+    \pgfmathsetmacro{\scaleitemseparation}{4}
+    \pgfmathsetmacro{\timenodewidth}{2cm}
+    \newcounter{itemnumber}
+    \setcounter{itemnumber}{0}
+    \newcommand{\lastnode}{n-0}
+
+    \newcommand{\timeentry}[2]{% time, description
+    \stepcounter{itemnumber}
+    \node[below right,minimum width=\timenodewidth] (n-\theitemnumber) at (\lastnode.south west) {#2};
+    \node[right] at (n-\theitemnumber.east) {};
+
+    \edef\lastnode{n-\theitemnumber}
+
+    \expandafter\edef\csname nodetime\theitemnumber \endcsname{#1}
+    }
+
+    \newcommand{\drawtimeline}{%
+        \draw[very thick,-latex] (0,0) -- ($(\lastnode.south west)-(\scaleitemseparation,0)+(0,-1)$);
+        \ExtractCoordinate{n-\theitemnumber.south}
+        \pgfmathsetmacro{\yposition}{\YCoord/28.452755}
+        \foreach \x in {1,...,\theitemnumber}
+        {   \pgfmathsetmacro{\timeposition}{\yposition/(\maxtime-\mintime)*\csname nodetime\x \endcsname}
+            \draw (0,\timeposition) -- (0.5,\timeposition) -- ($(n-\x.west)-(0.5,0)$) -- (n-\x.west);
+        }
+        \foreach \x in {0,...,\timeintervals}
+        {   \pgfmathsetmacro{\labelposition}{\yposition/(\maxtime-\mintime)*\x}
+            \node[left] (label-\x) at (-0.2,\labelposition) {\x\ \timeunit};
+            \draw (label-\x.east) -- ++ (0.2,0);
+        }   
+    }
+
+    \scalebox{0.7}{
+      \begin{tikzpicture}
+      \node[inner sep=0] (n-0) at (\scaleitemseparation,0) {};
+      \timeentry{1.5}{Milestone 1: Protocol description for gossiping}
+      \timeentry{3.1}{Milestone 2: Implementation of gossiping}
+      \timeentry{3.6}{Milestone 3: Protocol description for leader election}
+      \timeentry{6.6}{Milestone 4: Implementation of leader election}
+      \timeentry{7.4}{Milestone 5: Protocol description for time
+      synchronization}
+      \timeentry{13}{Milestone 6: Implementation of time synchronization}
+      \drawtimeline
+      \end{tikzpicture}
+    }
+    
+\end{frame}
+
+\frame{
+  \huge{Current progress}
+
+}
+
+\begin{frame}[fragile]
+  \frametitle{Interfaces -- Data structures}
+  \begin{lstlisting}
+    typedef struct gossip_node {
+      uint16_t id;              // ID of the node
+      uint32_t last_send;       // Timestamp of last sent msg
+      uint32_t last_recv;       // Timestamp of last received msg
+    } gossip_node_t
+
+    typedef struct gossip_node_list {
+      size_t length;            // Length of neighbor list
+      gossip_node* nodes;       // Neighbor list
+    } gossip_node_list_t
+
+    typedef enum gossip_strategy {      // Which node do we gossip to?
+      RANDOM,
+      OLDEST_FIRST
+    } gossip_strategy_t
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Interfaces -- Node functions}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+    // Register message handler
+    int gossip_init(void);
+
+    // Register callback for received application messages
+    int gossip_register_msg_handler(void (*handle) (void*, size_t));
+
+    // Send HELLO message to broadcast address (on a regular basis) 
+    int gossip_announce(void);
+
+    // Get routing table
+    gossip_node_list* gossip_get_all_neighbors(void);
+
+    // Choose specific node according to some strategy
+    gossip_node* gossip_get_neighbor(gossip_strategy_t strategy);
+
+    // Send a message to some node
+    int gossip_send(gossip_node, gossip_message);
+
+    // Handle incoming message
+    int gossip_handle_msg(void* msg, size_t length);
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Discussion}
+ \huge{Questions?}
+\end{frame}
+
+\end{document}

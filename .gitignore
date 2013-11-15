@@ -4,3 +4,8 @@
 *.out
 *.pdf
 *.toc
+*.bib
+*.nav
+*.xml
+*.snm
+*.vrb
