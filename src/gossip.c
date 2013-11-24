@@ -44,7 +44,7 @@ gossip_node_list_t* gossip_get_all_neighbours(void) {
     gossip_node_t **nodes = malloc(sizeof(gossip_node_t*)* len);
 
     item_t *cur = list_get_head(neighbours);
-    int i = 0;
+    size_t i = 0;
     for(i=0;i<len;i++) {
         nodes[i] = (gossip_node_t*)cur->val;
         cur = list_get_next(cur);
@@ -58,7 +58,7 @@ gossip_node_list_t* gossip_get_all_neighbours(void) {
 gossip_node_t* gossip_get_neighbour_random() {
     size_t len = neighbours->len;
     item_t *cur = list_get_head(neighbours);
-    int i = 0;
+    uint32_t i = 0;
 
     uint32_t rand = genrand_uint32();
     rand = rand % len;
