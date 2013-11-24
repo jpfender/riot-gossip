@@ -15,7 +15,7 @@ typedef struct gossip_node {
 
 typedef struct gossip_node_list {
     size_t length;
-    gossip_node_t* nodes;
+    gossip_node_t** nodes;
 } gossip_node_list_t;
 
 
