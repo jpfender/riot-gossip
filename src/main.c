@@ -15,8 +15,8 @@
 #include "posix_io.h"
 #include "nativenet.h"
 #include "msg.h"
-#include <random.h>
-#include <thread.h>
+#include "random.h"
+#include "thread.h"
 
 #include "gossip.h"
 
@@ -35,6 +35,8 @@ int main(void)
     uint32_t id = genrand_uint32();
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
     int main_pid = thread_getpid();
+    size_t i;
+    gossip_node_list_t *neighbours;
 
     // TODO: figure out what this does:
     posix_open(uart0_handler_pid, 0);
@@ -57,7 +59,14 @@ int main(void)
     gossip_register_msg_handler(handle_msg);
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
-    thread_sleep();
-
+    while (1) {
+        gossip_announce();
+        neighbours = gossip_get_all_neighbours();
+        printf("There are %d neighbours", neighbours->length);
+        for( i=0; i<neighbours->length; i++ ){
+            //print something neighbour related here
+        }
+        vtimer_usleep(10e6);
+    }
     return 0;
 }
