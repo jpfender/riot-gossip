@@ -1,5 +1,6 @@
 #include "gossip.h"
 #include "list.h"
+#include "random.h"
 
 
 static void (*gossip_application_msg_handler) (void*,size_t) = 0;
@@ -54,9 +55,49 @@ gossip_node_list_t* gossip_get_all_neighbours(void) {
     return node_list;
 }
 
-gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy) {
+gossip_node_t* gossip_get_neighbour_random() {
+    size_t len = neighbours->len;
+    item_t *cur = list_get_head(neighbours);
+    int i = 0;
 
-    return 0;
+    uint32_t rand = genrand_uint32();
+    rand = rand % len;
+
+    for(i=0;i<=rand;i++) {
+        cur = list_get_next(cur);
+    }
+    return (gossip_node_t*) cur->val
+}
+
+gossip_node_t* gossip_get_neighbour_oldest_first() {
+    gossip_node_t *node = 0;
+    gossip_node_t *lastest = 0;
+    item_t *cur = list_get_head(neighbours);
+    node = (gossip_node_t*) list_get_value(cur);
+    lastest = node;
+    cur = list_get_next(cur);
+    while(!(cur == 0)) {
+        node = (gossip_node_t*) list_get_value(cur);
+        if (node->last_send < lastest->last_send) {
+            lastest = node;
+    }
+
+    return lastest;
+}
+
+gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy) {
+    gossip_node_t *result;
+    switch(strategy) {
+        case RANDOM:
+            result = gossip_get_neighbour_random();
+            break;
+        case OLDEST_FIRST:
+            result = gossip_get_neighbour_oldest_first();
+            break;
+        default:
+            return 0;
+    }
+    return result;
 }
 
 int gossip_send(gossip_node_t node, void *gossip_message) {
