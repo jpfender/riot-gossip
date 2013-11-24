@@ -8,7 +8,7 @@ typedef enum gossip_strategy {
 } gossip_strategy_t;
 
 typedef struct gossip_node {
-    uint16_t id;         //id of the node
+    uint32_t id;         //id of the node
     uint32_t last_send;  //timestamp till last msg
     uint32_t last_recv;  //timestamp till last msg
 } gossip_node_t;
@@ -27,7 +27,7 @@ int gossip_announce(void);
 // register the message handler and init gossip system
 // returns 0 on success
 // return error code in case of failure
-int gossip_init(long id, transceiver_type_t transceiver_type);
+int gossip_init(uint32_t id, transceiver_type_t transceiver_type);
 
 // get a list of all known neighbours
 // returns node list on success

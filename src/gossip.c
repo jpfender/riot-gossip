@@ -1,6 +1,6 @@
 #include "gossip.h"
 
-int gossip_init(long id, transceiver_type_t transceiver_type) {
+int gossip_init(uint32_t id, transceiver_type_t transceiver_type) {
 
     return 0;
 }
