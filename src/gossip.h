@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "transceiver.h"
+#include "protocol.h"
 
 typedef enum gossip_strategy {
     RANDOM,
