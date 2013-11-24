@@ -44,10 +44,6 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy);
 // return error code in case of failure
 int gossip_send(gossip_node_t node, void *gossip_message);
 
-// handle incomming  messages, this is the hanlder for riot
-// TODO: check needed signature
-int gossip_handle_msg(void *msg, size_t length);
-
 // registers callback for received application messages
 // signature: handle(void *data, size_t length)
 void gossip_register_msg_handler(void (*handle) (void*,size_t));

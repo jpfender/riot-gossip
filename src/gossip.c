@@ -30,10 +30,11 @@ void gossip_radio(void) {
         if (m.type == PKT_PENDING) {
             p = (radio_packet_t*) m.content.ptr;
 
-            //do magic here
+            if(gossip_handle_msg(p)) {
+                DEBUG("Handle gossip msg failed");
+            }
 
             p->processing--;
-            puts("\n");
         }
         else if (m.type == ENOBUFFER) {
             DEBUG("Transceiver buffer full");
@@ -141,8 +142,8 @@ int gossip_send(gossip_node_t node, void *gossip_message) {
     return 0;
 }
 
-int gossip_handle_msg(void *msg, size_t length) {
-
+int gossip_handle_msg(radio_packet_t* p) {
+    // do magic here
     return 0;
 }
 
