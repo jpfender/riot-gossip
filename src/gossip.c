@@ -46,7 +46,7 @@ gossip_node_list_t* gossip_get_all_neighbours(void) {
     int i = 0;
     for(i=0;i<len;i++) {
         nodes[i] = (gossip_node_t*)cur->val;
-        cur = cur->next;
+        cur = list_get_next(cur);
     }
 
     node_list->nodes=nodes;
