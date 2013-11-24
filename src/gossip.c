@@ -1,13 +1,48 @@
 #include "gossip.h"
+#include "debug.h"
+#include <thread.h>
 #include "list.h"
 #include "random.h"
 
+#define SND_BUFFER_SIZE     (100)
+#define RCV_BUFFER_SIZE     (64)
+#define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT)
+
+char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
+msg_t msg_q[RCV_BUFFER_SIZE];
 
 static void (*gossip_application_msg_handler) (void*,size_t) = 0;
 
 list_t *neighbours = 0;
 
 uint32_t gossip_id;
+
+// this function contains the message revciever loop
+void gossip_radio(void) {
+    msg_t m;
+    radio_packet_t *p;
+    uint8_t i;
+
+    msg_init_queue(msg_q, RCV_BUFFER_SIZE);
+
+    while (1) {
+        msg_receive(&m);
+        if (m.type == PKT_PENDING) {
+            p = (radio_packet_t*) m.content.ptr;
+
+            //do magic here
+
+            p->processing--;
+            puts("\n");
+        }
+        else if (m.type == ENOBUFFER) {
+            DEBUG("Transceiver buffer full");
+        }
+        else {
+            DEBUG("Unknown packet received");
+        }
+    }
+}
 
 int gossip_init(uint32_t id, transceiver_type_t transceiver_type) {
     int gossip_radio_pid;
