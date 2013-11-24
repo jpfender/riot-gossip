@@ -2,7 +2,29 @@
 #include "list.h"
 
 list_t *neighbours = 0;
+
+uint32_t gossip_id;
+
 int gossip_init(uint32_t id, transceiver_type_t transceiver_type) {
+    int gossip_radio_pid;
+    
+    if(id == 0) {
+        return 1;
+    }
+
+    transceiver_init(transceiver_type);
+    transceiver_start();
+    gossip_radio_pid = thread_create(gossip_radio_stack_buffer,
+                                     RADIO_STACK_SIZE,
+                                     PRIORITY_MAIN-2,
+                                     CREATE_STACKTEST,
+                                     gossip_radio,
+                                     "gossip_radio");
+    transceiver_register(transceiver_type, gossip_radio_pid);
+
+    neighbours = list_new();
+
+    gossip_id = id;
 
     return 0;
 }
