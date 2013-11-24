@@ -1,6 +1,9 @@
 #include "gossip.h"
 #include "list.h"
 
+
+static void (*gossip_application_msg_handler) (void*,size_t) = 0;
+
 list_t *neighbours = 0;
 
 uint32_t gossip_id;
@@ -66,7 +69,6 @@ int gossip_handle_msg(void *msg, size_t length) {
     return 0;
 }
 
-int gossip_register_msg_handler(void (*handle) (void*,size_t)) {
-
-    return 0;
+void gossip_register_msg_handler(void (*handle) (void*,size_t)) {
+    gossip_application_msg_handler = handle;
 }
