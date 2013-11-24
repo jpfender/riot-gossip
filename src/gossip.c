@@ -17,6 +17,8 @@ list_t *neighbours = 0;
 
 uint32_t gossip_id;
 
+int transceiver_thread = 0;
+
 // this function contains the message revciever loop
 void gossip_radio(void) {
     msg_t m;
@@ -53,7 +55,7 @@ int gossip_init(uint32_t id, transceiver_type_t transceiver_type) {
     }
 
     transceiver_init(transceiver_type);
-    transceiver_start();
+    transceiver_thread = transceiver_start();
     gossip_radio_pid = thread_create(gossip_radio_stack_buffer,
                                      RADIO_STACK_SIZE,
                                      PRIORITY_MAIN-2,
