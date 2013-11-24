@@ -1,12 +1,12 @@
 #include "gossip.h"
 
-int gossip_announce(void) {
+int gossip_init(long id, transceiver_type_t transceiver_type) {
 
     return 0;
 }
 
-int gossip_init(void) {
-    
+int gossip_announce(void) {
+
     return 0;
 }
 
