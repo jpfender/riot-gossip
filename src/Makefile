@@ -33,6 +33,7 @@ USEMODULE += shell_commands
 USEMODULE += transceiver
 USEMODULE += uart0
 USEMODULE += vtimer
+USEMODULE += random
 
 # as of yet unsupported modules:
 #USEMODULE += fat
