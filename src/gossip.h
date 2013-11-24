@@ -50,7 +50,5 @@ int gossip_handle_msg(void *msg, size_t length);
 
 // registers callback for received application messages
 // signature: handle(void *data, size_t length)
-// returns 0 on success
-// return error code in case of failure
-int gossip_register_msg_handler(void (*handle) (void*,size_t));
+void gossip_register_msg_handler(void (*handle) (void*,size_t));
   
