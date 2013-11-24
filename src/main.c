@@ -20,6 +20,8 @@
 
 #include "gossip.h"
 
+#define ENABLE_DEBUG
+
 void handle_msg(void* data, size_t len){
     size_t i;
 
@@ -43,7 +45,7 @@ int main(void)
 
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
-    printf("Initializing gossiping.");
+    printf("Initializing gossiping.\n");
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("gossip_init(%d) failed\n", transceiver);
         return 1;
@@ -62,7 +64,7 @@ int main(void)
     while (1) {
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
-        printf("There are %d neighbours", neighbours->length);
+        printf("There are %d neighbours\n", neighbours->length);
         for( i=0; i<neighbours->length; i++ ){
             //print something neighbour related here
         }
