@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <debug.h>
 
 #include "vtimer.h"
 #include "rtc.h"
@@ -17,78 +18,45 @@
 #include "msg.h"
 #include <thread.h>
 
-#define SND_BUFFER_SIZE     (100)
-#define RCV_BUFFER_SIZE     (64)
-#define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT)
+#include "gossip.h"
 
-char radio_stack_buffer[RADIO_STACK_SIZE];
-msg_t msg_q[RCV_BUFFER_SIZE];
+void handle_msg(void* data, size_t len){
+    size_t i;
 
-void radio(void) {
-    msg_t m;
-    radio_packet_t *p;
-    uint8_t i;
-
-    msg_init_queue(msg_q, RCV_BUFFER_SIZE);
-
-    while (1) {
-        msg_receive(&m);
-        if (m.type == PKT_PENDING) {
-            p = (radio_packet_t*) m.content.ptr;
-            printf("Got radio packet:\n");
-            printf("\tLength:\t%u\n", p->length);
-            printf("\tSrc:\t%u\n", p->src);
-            printf("\tDst:\t%u\n", p->dst);
-            printf("\tLQI:\t%u\n", p->lqi);
-            printf("\tRSSI:\t%u\n", p->rssi);
-
-            for (i = 0; i < p->length; i++) {
-                printf("%02X ", p->data[i]);
-            }
-            p->processing--;
-            puts("\n");
-        }
-        else if (m.type == ENOBUFFER) {
-            puts("Transceiver buffer full");
-        }
-        else {
-            puts("Unknown packet received");
-        }
+    // assume we were sending a simple string for now
+    puts("got a message: ");
+    for( i=0 ; i<len ; i++){
+        putchar( ((char*)data)[i] );
     }
 }
 
 int main(void)
 {
-    int radio_pid;
-    struct tm localt;
-    shell_t shell;
+    transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
+    int main_pid = thread_getpid();
 
-    transceiver_init(TRANSCEIVER_NATIVE);
-    transceiver_start();
-    radio_pid = thread_create(radio_stack_buffer, RADIO_STACK_SIZE, PRIORITY_MAIN-2, CREATE_STACKTEST, radio, "radio");
-    transceiver_register(TRANSCEIVER_NATIVE, radio_pid);
-
+    // TODO: figure out what this does:
     posix_open(uart0_handler_pid, 0);
-
 
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
-    rtc_get_localtime(&localt);
-    printf("The time is now: %s\n", asctime(&localt));
+    printf("Initializing gossiping.");
+    if( 0 != gossip_init(transceiver) ){
+        DEBUG("gossip_init(%d) failed\n", transceiver);
+        return 1;
+    }
 
-    /* fancy greeting */
-    printf("Hold on half a second...\n");
-    LED_RED_TOGGLE;
-    vtimer_usleep(500000);
-    LED_RED_TOGGLE;
-    LED_GREEN_ON;
-    LED_GREEN_OFF;
+    DEBUG("Sending gossip hello to the world.\n");
+    if( 0 != gossip_announce() ){
+        DEBUG("gossip_announce() failed\n");
+        return 1;
+    }
 
-    printf("You may use the shell now.\n");
-    printf("Type help for help, ctrl+c to exit.\n");
+    puts("Registering sample gossip message handler.");
+    gossip_register_msg_handler(handle_msg);
 
-    shell_init(&shell, NULL, uart0_readc, uart0_putc);
-    shell_run(&shell);
-        
+    // TODO: sleep for now, should receive IPC logger msg and printf here
+    thread_sleep();
+
     return 0;
 }
