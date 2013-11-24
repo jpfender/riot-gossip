@@ -66,7 +66,7 @@ gossip_node_t* gossip_get_neighbour_random() {
     for(i=0;i<=rand;i++) {
         cur = list_get_next(cur);
     }
-    return (gossip_node_t*) cur->val
+    return (gossip_node_t*) cur->val;
 }
 
 gossip_node_t* gossip_get_neighbour_oldest_first() {
@@ -80,6 +80,7 @@ gossip_node_t* gossip_get_neighbour_oldest_first() {
         node = (gossip_node_t*) list_get_value(cur);
         if (node->last_send < lastest->last_send) {
             lastest = node;
+        }
     }
 
     return lastest;
