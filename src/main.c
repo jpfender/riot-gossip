@@ -53,9 +53,9 @@ int main(void)
     }
 
     DEBUG("Sending gossip hello to the world.\n");
-    if( 0 != gossip_announce() ){
-        DEBUG("gossip_announce() failed\n");
-        return 1;
+    int r = gossip_announce();
+    if( 0 != r ){
+        DEBUG("gossip_announce() failed with %i\n", r);
     }
 
     puts("Registering sample gossip message handler.");
