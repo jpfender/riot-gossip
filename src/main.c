@@ -34,7 +34,8 @@ void handle_msg(void* data, size_t len){
 
 int main(void)
 {
-    uint32_t id = genrand_uint32();
+    /* int16_t id = genrand_uint32(); */
+    int16_t id = 1;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
     int main_pid = thread_getpid();
     size_t i;
