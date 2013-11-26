@@ -28,7 +28,7 @@ int gossip_announce(void);
 // register the message handler and init gossip system
 // returns 0 on success
 // return error code in case of failure
-int gossip_init(uint32_t id, transceiver_type_t transceiver_type);
+int gossip_init(int16_t id, transceiver_type_t transceiver_type);
 
 // get a list of all known neighbours
 // returns node list on success
@@ -43,7 +43,7 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy);
 // send a message to some node
 // returns 0 on success
 // return error code in case of failure
-int gossip_send(gossip_node_t node, void *gossip_message);
+int gossip_send(gossip_node_t* node, void *gossip_message, int len);
 
 // registers callback for received application messages
 // signature: handle(void *data, size_t length)

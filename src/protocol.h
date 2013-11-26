@@ -1,3 +1,3 @@
 #define PREAMBLE "GOSSIP:"
-#define ANOUNCE "OHAI:"
+#define ANNOUNCE "OHAI:"
 #define MSG "MSG:"
