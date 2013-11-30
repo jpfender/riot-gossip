@@ -28,7 +28,7 @@ int gossip_announce(void);
 // register the message handler and init gossip system
 // returns 0 on success
 // return error code in case of failure
-int gossip_init(int16_t id, transceiver_type_t transceiver_type);
+int gossip_init(uint16_t id, transceiver_type_t transceiver_type);
 
 // get a list of all known neighbours
 // returns node list on success

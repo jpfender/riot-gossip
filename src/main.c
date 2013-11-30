@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <debug.h>
 #include <stdint.h>
 
 #include "vtimer.h"
@@ -20,7 +19,8 @@
 
 #include "gossip.h"
 
-#define ENABLE_DEBUG
+#define ENABLE_DEBUG (1)
+#include <debug.h>
 
 void handle_msg(void* data, size_t len){
     size_t i;
@@ -34,8 +34,8 @@ void handle_msg(void* data, size_t len){
 
 int main(void)
 {
-    /* int16_t id = genrand_uint32(); */
-    int16_t id = 1;
+    uint16_t id;
+    timex_t time;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
     int main_pid = thread_getpid();
     size_t i;
@@ -47,29 +47,34 @@ int main(void)
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
     printf("Initializing gossiping.\n");
+    vtimer_now(&time);
+    genrand_init( time.microseconds );
+    id = (uint16_t)genrand_uint32();
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("gossip_init(%d) failed\n", transceiver);
         return 1;
     }
 
-    DEBUG("Sending gossip hello to the world.\n");
-    int r = gossip_announce();
-    if( 0 != r ){
-        DEBUG("gossip_announce() failed with %i\n", r);
-    }
-
     puts("Registering sample gossip message handler.");
     gossip_register_msg_handler(handle_msg);
 
+    DEBUG("Announcing.\n");
+    int r = gossip_announce();
+    if( 1 != r ){
+        DEBUG("gossip_announce() failed with %i\n", r);
+    }
+
+
     // TODO: sleep for now, should receive IPC logger msg and printf here
     while (1) {
+        vtimer_usleep(1e6 * (genrand_uint32()%10));
+        DEBUG("Re-Announcing.\n");
         gossip_announce();
-        neighbours = gossip_get_all_neighbours();
-        printf("There are %d neighbours\n", neighbours->length);
+        //neighbours = gossip_get_all_neighbours();
+        //printf("There are %d neighbours\n", neighbours->length);
         for( i=0; i<neighbours->length; i++ ){
             //print something neighbour related here
         }
-        vtimer_usleep(10e6);
     }
     return 0;
 }

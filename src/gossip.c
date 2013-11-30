@@ -1,5 +1,4 @@
 #include "gossip.h"
-#include "debug.h"
 #include <thread.h>
 #include "list.h"
 #include "random.h"
@@ -7,11 +6,14 @@
 #include "protocol.h"
 #include "hwtimer.h"
 
+#define ENABLE_DEBUG (1)
+#include "debug.h"
+
 #define SND_BUFFER_SIZE     (100)
 #define RCV_BUFFER_SIZE     (64)
 #define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT)
 
-#define WAIT_TIME           (60)
+#define WAIT_TIME           (2)
 #define SECOND              (1000 * 1000)
 #define SENDING_DELAY       (10 * 1000)
 
@@ -39,6 +41,7 @@ void gossip_radio(void) {
 
     while (1) {
         msg_receive(&m);
+        DEBUG("gossip_radio received something\n");
         if (m.type == PKT_PENDING) {
             p = (radio_packet_t*) m.content.ptr;
 
@@ -57,7 +60,7 @@ void gossip_radio(void) {
     }
 }
 
-int gossip_init(int16_t id, transceiver_type_t transceiver_type) {
+int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     int gossip_radio_pid;
     transceiver_command_t tcmd;
     msg_t mesg;
@@ -199,7 +202,7 @@ int gossip_handle_msg(radio_packet_t* p) {
 }
 
 int gossip_handle_announce(radio_packet_t* p) {
-
+    printf("got an announce from: %ld\n", p->src);
     return 0;
 }
 
