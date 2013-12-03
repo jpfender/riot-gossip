@@ -224,6 +224,16 @@ int gossip_handle_msg(radio_packet_t* p) {
 
 int gossip_handle_announce(radio_packet_t* p) {
     printf("got an announce from: %ld\n", p->src);
+    gossip_node_t *node = gossip_find_node_by_id(p->src);
+    if(!node) {
+        printf("adding new node: %ld\n", p->src);
+        node = malloc(sizeof(gossip_node_t));
+        node->id = p->src;
+        list_add_item(neighbours, node);
+    }
+    timex_t now;
+    vtimer_now(&now);
+    node->last_recv = now.seconds;
     return 0;
 }
 
