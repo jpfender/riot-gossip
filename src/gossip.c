@@ -17,6 +17,8 @@
 #define SECOND              (1000 * 1000)
 #define SENDING_DELAY       (10 * 1000)
 
+#define CLEANUP_THRESHOLD   (60)
+
 char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
 msg_t msg_q[RCV_BUFFER_SIZE];
 
@@ -252,6 +254,21 @@ int gossip_handle_announce(radio_packet_t* p) {
     vtimer_now(&now);
     node->last_recv = now.seconds;
     return 0;
+}
+
+void gossip_cleanup(void) {
+    gossip_node_t *node = 0;
+    item_t *cur = list_get_head(neighbours);
+    node = (gossip_node_t*) list_get_value(cur);
+    timex_t now;
+    vtimer_now(&now);
+    while (cur) {
+        if (now.seconds - node->last_recv > CLEANUP_THRESHOLD) {
+            list_remove_item(neighbours, cur);
+        }
+        cur = list_get_next(cur);
+        node = (gossip_node_t*) list_get_value(cur);
+    }
 }
 
 void gossip_register_msg_handler(void (*handle) (void*,size_t)) {
