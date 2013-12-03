@@ -62,3 +62,20 @@ list_t *list_new(){
     list_t *new = malloc(sizeof(list_t));
     return new;
 }
+
+void list_free(list_t *l) {
+    if(l->head == 0 || l == 0) {
+        free(l);
+        return;
+    }
+
+    item_t *cur = l->head;
+    item_t *next = 0;
+    while(!(cur->next == 0)) {
+            next = cur->next;
+            free(cur->val);
+            free(cur);
+            cur = next;
+    }
+    free(l);
+}
