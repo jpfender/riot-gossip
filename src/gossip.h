@@ -35,6 +35,11 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type);
 // returns NULL in case of failure
 gossip_node_list_t* gossip_get_all_neighbours();
 
+// free a node list returned by gossip_get_all_neighbours()
+// takes node list as paramter
+// returns nothing
+void gossip_free_node_list(gossip_node_list_t* nl);
+
 // choose specific node by some strategy
 // returns node on success
 // returns NULL in case of failure

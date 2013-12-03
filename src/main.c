@@ -75,6 +75,7 @@ int main(void)
         for( i=0; i<neighbours->length; i++ ){
             //print something neighbour related here
         }
+        //gossip_free_node_list(neighbours);
     }
     return 0;
 }

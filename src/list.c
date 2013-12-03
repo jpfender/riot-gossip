@@ -33,8 +33,17 @@ void list_remove_item(list_t *l, item_t *i) {
     if(l->head == 0 || l == 0) return;
 
     if(l->head == i) {
-        free(l->head);
-        l->head = 0;
+        if(l->head->next) {
+            item_t *tmp = l->head->next;
+            free(l->head->val);
+            free(l->head);
+            l->head = tmp;
+        }
+        else {
+            free(l->head->val);
+            free(l->head);
+            l->head = 0;
+        }
     }
     else {
         item_t *cur = l->head->next;
@@ -44,6 +53,7 @@ void list_remove_item(list_t *l, item_t *i) {
             cur = cur->next;
         }
         last->next = cur->next;
+        free(cur->val);
         free(cur);
     }
     l->len--;
@@ -61,4 +71,21 @@ void *list_get_value(item_t *i) {
 list_t *list_new(){
     list_t *new = malloc(sizeof(list_t));
     return new;
+}
+
+void list_free(list_t *l) {
+    if(l->head == 0 || l == 0) {
+        free(l);
+        return;
+    }
+
+    item_t *cur = l->head;
+    item_t *next = 0;
+    while(!(cur->next == 0)) {
+            next = cur->next;
+            free(cur->val);
+            free(cur);
+            cur = next;
+    }
+    free(l);
 }
