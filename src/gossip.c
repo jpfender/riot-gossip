@@ -213,11 +213,28 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 
 int gossip_handle_msg(radio_packet_t* p) {
     char *msg_text = (char*) p->data;
+    size_t cur_len = p->length;
+
+    // check if it is a gossip packet
     if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE)))
         return -1;
+
+    // strip premable and update msg length
     msg_text += strlen(PREAMBLE);
+    cur_len -= strlen(PREAMBLE);
+
+    // if packet is an ANNOUNCE Packet
     if (strncmp(msg_text, ANNOUNCE, strlen(ANNOUNCE)) == 0)
         return gossip_handle_announce(p);
+
+    // if packet is an MSG Packet
+    if (strncmp(msg_text, MSG, strlen(MSG)) == 0) {
+        // strip msg header and update length
+        msg_text += strlen(MSG);
+        cur_len -= strlen(MSG);
+        gossip_application_msg_handler(msg_text,cur_len);
+        return 0;
+    }
 
     return 0;
 }
