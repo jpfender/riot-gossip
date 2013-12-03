@@ -127,6 +127,19 @@ void gossip_free_node_list(gossip_node_list_t* nl) {
     free(nl);
 }
 
+gossip_node_t *gossip_find_node_by_id(uint16_t id) {
+    item_t *cur = list_get_head(neighbours);
+    gossip_node_t *node = NULL;
+        while(cur) {
+            node = (gossip_node_t*) cur->val;
+            if(node->id == id) {
+                return node;
+            }
+            cur = list_get_next(cur);
+        }
+    return NULL;
+}
+
 gossip_node_t* gossip_get_neighbour_random() {
     size_t len = neighbours->len;
     item_t *cur = list_get_head(neighbours);
