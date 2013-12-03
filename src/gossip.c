@@ -168,6 +168,7 @@ gossip_node_t* gossip_get_neighbour_oldest_first() {
         if (node->last_send < lastest->last_send) {
             lastest = node;
         }
+        cur = list_get_next(cur);
     }
 
     return lastest;
