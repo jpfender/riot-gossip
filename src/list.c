@@ -89,3 +89,15 @@ void list_free(list_t *l) {
     }
     free(l);
 }
+
+item_t *list_get_item_by_value(list_t *l, void* v) {
+    if(l->head == 0 || l == 0) return NULL;
+    item_t *cur = l->head;
+    while(cur) {
+        if(cur->val == v) {
+            return cur;
+        }
+        cur = cur->next;
+    }
+    return NULL;
+}

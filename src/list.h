@@ -20,3 +20,4 @@ size_t list_get_length(list_t *l);
 void *list_get_value(item_t *i);
 list_t *list_new();
 void list_free(list_t *l);
+item_t *list_get_item_by_value(list_t *l, void* v);
