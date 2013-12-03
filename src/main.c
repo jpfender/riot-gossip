@@ -70,12 +70,13 @@ int main(void)
         vtimer_usleep(1000000 * (genrand_uint32()%10));
         DEBUG("Re-Announcing.\n");
         gossip_announce();
-        //neighbours = gossip_get_all_neighbours();
-        //printf("There are %d neighbours\n", neighbours->length);
+        neighbours = gossip_get_all_neighbours();
+        printf("There are %d neighbours\n", neighbours->length);
         for( i=0; i<neighbours->length; i++ ){
             //print something neighbour related here
         }
-        //gossip_free_node_list(neighbours);
+        gossip_cleanup();
+        gossip_free_node_list(neighbours);
     }
     return 0;
 }
