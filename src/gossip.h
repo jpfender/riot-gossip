@@ -9,7 +9,7 @@ typedef enum gossip_strategy {
 } gossip_strategy_t;
 
 typedef struct gossip_node {
-    uint32_t id;         //id of the node
+    uint16_t id;         //id of the node
     uint32_t last_send;  //timestamp till last msg
     uint32_t last_recv;  //timestamp till last msg
 } gossip_node_t;
