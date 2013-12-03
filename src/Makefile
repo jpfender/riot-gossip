@@ -1,3 +1,6 @@
+export CFLAGS += -g
+export LDFLAGS += -g
+
 valgrind: CFLAGS += -g
 valgrind: CFLAGS += -DHAVE_VALGRIND_VALGRIND_H
 
