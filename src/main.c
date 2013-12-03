@@ -67,7 +67,7 @@ int main(void)
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     while (1) {
-        vtimer_usleep(1e6 * (genrand_uint32()%10));
+        vtimer_usleep(1000000 * (genrand_uint32()%10));
         DEBUG("Re-Announcing.\n");
         gossip_announce();
         //neighbours = gossip_get_all_neighbours();
