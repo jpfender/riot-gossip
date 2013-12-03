@@ -69,6 +69,8 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
         return 1;
     }
 
+    neighbours = list_new();
+
     transceiver_init(transceiver_type);
     transceiver_start();
     gossip_radio_pid = thread_create(gossip_radio_stack_buffer,
@@ -88,8 +90,6 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     msg_send_receive(&mesg, &mesg, transceiver_pid);
 
     hwtimer_wait(HWTIMER_TICKS(WAIT_TIME * SECOND));
-
-    neighbours = list_new();
 
     gossip_id = id;
 
