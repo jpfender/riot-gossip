@@ -243,10 +243,10 @@ int gossip_handle_msg(radio_packet_t* p) {
 }
 
 int gossip_handle_announce(radio_packet_t* p) {
-    printf("got an announce from: %ld\n", p->src);
+    DEBUG("got an announce from: %ld\n", p->src);
     gossip_node_t *node = gossip_find_node_by_id(p->src);
     if(!node) {
-        printf("adding new node: %ld\n", p->src);
+        DEBUG("adding new node: %ld\n", p->src);
         node = malloc(sizeof(gossip_node_t));
         node->id = p->src;
         list_add_item(neighbours, node);
@@ -265,10 +265,10 @@ void gossip_cleanup(void) {
     while (cur) {
         node = (gossip_node_t*) list_get_value(cur);
         if (now.microseconds/SECOND - node->last_recv > CLEANUP_THRESHOLD) {
-            printf("forgetting about node %d\n", node->id);
+            DEBUG("forgetting about node %d\n", node->id);
             list_remove_item(neighbours, cur);
         } else {
-            printf("will forget %d in %ld seconds\n", node->id, 
+            DEBUG("will forget %d in %ld seconds\n", node->id, 
                 (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
         }
         cur = list_get_next(cur);

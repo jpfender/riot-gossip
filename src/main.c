@@ -47,6 +47,7 @@ int main(void)
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
     printf("Initializing gossiping.\n");
+    vtimer_init();
     vtimer_now(&time);
     genrand_init( time.microseconds );
     id = (uint16_t)genrand_uint32();
@@ -76,7 +77,7 @@ int main(void)
             //print something neighbour related here
         }
         gossip_cleanup();
-        gossip_free_node_list(neighbours);
+        //gossip_free_node_list(neighbours);
     }
     return 0;
 }
