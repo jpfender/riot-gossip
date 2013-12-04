@@ -70,6 +70,8 @@ void *list_get_value(item_t *i) {
 
 list_t *list_new(){
     list_t *new = malloc(sizeof(list_t));
+    new->head = 0;
+    new->len = 0;
     return new;
 }
 
