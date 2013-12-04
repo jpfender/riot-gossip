@@ -17,7 +17,7 @@
 #define SECOND              (1000 * 1000)
 #define SENDING_DELAY       (10 * 1000)
 
-#define CLEANUP_THRESHOLD   (60)
+#define CLEANUP_THRESHOLD   (10)
 
 char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
 msg_t msg_q[RCV_BUFFER_SIZE];
@@ -163,7 +163,7 @@ gossip_node_t* gossip_get_neighbour_oldest_first() {
     node = (gossip_node_t*) list_get_value(cur);
     lastest = node;
     cur = list_get_next(cur);
-    while(!(cur == 0)) {
+    while(cur) {
         node = (gossip_node_t*) list_get_value(cur);
         if (node->last_send < lastest->last_send) {
             lastest = node;
@@ -253,22 +253,25 @@ int gossip_handle_announce(radio_packet_t* p) {
     }
     timex_t now;
     vtimer_now(&now);
-    node->last_recv = now.seconds;
+    node->last_recv = now.microseconds/SECOND;
     return 0;
 }
 
 void gossip_cleanup(void) {
     gossip_node_t *node = 0;
     item_t *cur = list_get_head(neighbours);
-    node = (gossip_node_t*) list_get_value(cur);
     timex_t now;
     vtimer_now(&now);
     while (cur) {
-        if (now.seconds - node->last_recv > CLEANUP_THRESHOLD) {
+        node = (gossip_node_t*) list_get_value(cur);
+        if (now.microseconds/SECOND - node->last_recv > CLEANUP_THRESHOLD) {
+            printf("forgetting about node %d\n", node->id);
             list_remove_item(neighbours, cur);
+        } else {
+            printf("will forget %d in %ld seconds\n", node->id, 
+                (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
         }
         cur = list_get_next(cur);
-        node = (gossip_node_t*) list_get_value(cur);
     }
 }
 
