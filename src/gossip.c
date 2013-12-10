@@ -248,7 +248,12 @@ int gossip_handle_msg(radio_packet_t* p) {
         // strip msg header and update length
         msg_text += strlen(MSG);
         cur_len -= strlen(MSG);
-        gossip_application_msg_handler(msg_text,cur_len);
+        if(gossip_application_msg_handler) {
+            gossip_application_msg_handler(msg_text,cur_len);
+        }
+        else {
+            DEBUG("WARNING: got msg but handler was not set\n", p->src);
+        }
         return 0;
     }
 
