@@ -140,7 +140,7 @@ gossip_node_t *gossip_find_node_by_id(uint16_t id) {
 }
 
 gossip_node_t* gossip_get_neighbour_random() {
-    size_t len = neighbours->len;
+    size_t len = list_get_length(neighbours);
     item_t *cur = list_get_head(neighbours);
     uint32_t i = 0;
 
