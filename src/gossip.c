@@ -276,7 +276,7 @@ void gossip_cleanup(void) {
             DEBUG("forgetting about node %d\n", node->id);
             list_remove_item(neighbours, cur);
         } else {
-            DEBUG("will forget %d in %ld seconds\n", node->id, 
+            DEBUG("will forget %d in %ld seconds\n", node->id,
                 (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
         }
         cur = list_get_next(cur);
