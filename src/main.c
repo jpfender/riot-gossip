@@ -68,6 +68,8 @@ int main(void)
 
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
+    int count = 0;
+    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + 100];
     while (1) {
         vtimer_usleep(1000000 * (genrand_uint32()%10));
         DEBUG("Re-Announcing.\n");
@@ -77,6 +79,13 @@ int main(void)
         for( i=0; i<neighbours->length; i++ ){
             //print something neighbour related here
         }
+
+        // Send a message to a random neighbour
+        sprintf(msg_buffer, "%s%sThis is message %i from node %i",
+                PREAMBLE, MSG, count++, id);
+        gossip_node_t* node = gossip_get_neighbour_random();
+        gossip_send(node, msg_buffer, strlen(msg_buffer));
+
         gossip_cleanup();
         gossip_free_node_list(neighbours);
     }
