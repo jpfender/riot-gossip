@@ -214,6 +214,19 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     return r;
 }
 
+void gossip_update_neighbour(radio_packet_t* p) {
+    gossip_node_t *node = gossip_find_node_by_id(p->src);
+    if(!node) {
+        DEBUG("adding new node: %ld\n", p->src);
+        node = malloc(sizeof(gossip_node_t));
+        node->id = p->src;
+        list_add_item(neighbours, node);
+    }
+    timex_t now;
+    vtimer_now(&now);
+    node->last_recv = now.microseconds/SECOND;
+}
+
 int gossip_handle_msg(radio_packet_t* p) {
     char *msg_text = (char*) p->data;
     size_t cur_len = p->length;
@@ -225,6 +238,9 @@ int gossip_handle_msg(radio_packet_t* p) {
     // strip premable and update msg length
     msg_text += strlen(PREAMBLE);
     cur_len -= strlen(PREAMBLE);
+
+    // update neighbour table
+    gossip_update_neighbour(p);
 
     // if packet is an ANNOUNCE Packet
     if (strncmp(msg_text, ANNOUNCE, strlen(ANNOUNCE)) == 0)
@@ -244,16 +260,6 @@ int gossip_handle_msg(radio_packet_t* p) {
 
 int gossip_handle_announce(radio_packet_t* p) {
     DEBUG("got an announce from: %ld\n", p->src);
-    gossip_node_t *node = gossip_find_node_by_id(p->src);
-    if(!node) {
-        DEBUG("adding new node: %ld\n", p->src);
-        node = malloc(sizeof(gossip_node_t));
-        node->id = p->src;
-        list_add_item(neighbours, node);
-    }
-    timex_t now;
-    vtimer_now(&now);
-    node->last_recv = now.microseconds/SECOND;
     return 0;
 }
 
