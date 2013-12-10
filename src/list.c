@@ -54,9 +54,13 @@ void list_remove_item(list_t *l, item_t *i) {
     else {
         item_t *cur = l->head->next;
         item_t *last = l->head;
-        while(!(cur->next == i)) {
+        while(!(cur == i)) {
             last = cur;
             cur = cur->next;
+        }
+        if(!cur) {
+            mutex_unlock(l->lock);
+            return;
         }
         last->next = cur->next;
         free(cur->val);
