@@ -147,7 +147,7 @@ gossip_node_t* gossip_get_neighbour_random() {
     uint32_t rand = genrand_uint32();
     rand = rand % len;
 
-    for(i=0;i<=rand;i++) {
+    for(i=0;i<rand;i++) {
         cur = list_get_next(cur);
     }
     return (gossip_node_t*) cur->val;
