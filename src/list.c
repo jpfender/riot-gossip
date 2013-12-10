@@ -2,8 +2,10 @@
 
 item_t *list_get_head(list_t *l) {
     if(l == 0) return 0;
-    mutex_wait(l->lock);
-    return l->head;
+    mutex_lock(l->lock);
+    item_t *tmp = l->head;
+    mutex_unlock(l->lock);
+    return tmp;
 }
 
 item_t *list_get_next(item_t *prev) {
@@ -65,8 +67,10 @@ void list_remove_item(list_t *l, item_t *i) {
 }
 
 size_t list_get_length(list_t *l){
-    mutex_wait(l->lock);
-    return l->len;
+    mutex_lock(l->lock);
+    size_t tmp = l->len;
+    mutex_unlock(l->lock);
+    return tmp;
 }
 
 void *list_get_value(item_t *i) {
