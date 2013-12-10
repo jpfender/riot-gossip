@@ -122,10 +122,7 @@ gossip_node_list_t* gossip_get_all_neighbours(void) {
 }
 
 void gossip_free_node_list(gossip_node_list_t* nl) {
-    size_t i = 0;
-    for(i=0;i<nl->length;i++) {
-        free(nl->nodes[i]);
-    }
+    free(nl->nodes);
     free(nl);
 }
 
