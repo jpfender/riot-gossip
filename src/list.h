@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "mutex.h"
 
 struct item {
    void *val;
@@ -10,6 +11,7 @@ typedef struct item item_t;
 typedef struct list {
    item_t *head;
    size_t len;
+   struct mutex_t* lock;
 } list_t;
 
 item_t *list_get_head(list_t *l);

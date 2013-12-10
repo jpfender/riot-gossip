@@ -2,6 +2,7 @@
 
 item_t *list_get_head(list_t *l) {
     if(l == 0) return 0;
+    mutex_wait(l->lock);
     return l->head;
 }
 
@@ -12,6 +13,7 @@ item_t *list_get_next(item_t *prev) {
 void list_add_item(list_t *l, void *val) {
     if(val == 0 || l == 0) return;
 
+    mutex_lock(l->lock);
     if(l->head == 0) {
         l->head = malloc(sizeof(item_t));
         l->head->val = val;
@@ -27,11 +29,13 @@ void list_add_item(list_t *l, void *val) {
         cur->next->val = val;
     }
     l->len++;
+    mutex_unlock(l->lock);
 }
 
 void list_remove_item(list_t *l, item_t *i) {
     if(l->head == 0 || l == 0) return;
 
+    mutex_lock(l->lock);
     if(l->head == i) {
         if(l->head->next) {
             item_t *tmp = l->head->next;
@@ -57,9 +61,11 @@ void list_remove_item(list_t *l, item_t *i) {
         free(cur);
     }
     l->len--;
+    mutex_unlock(l->lock);
 }
 
 size_t list_get_length(list_t *l){
+    mutex_wait(l->lock);
     return l->len;
 }
 
@@ -72,6 +78,8 @@ list_t *list_new(){
     list_t *new = malloc(sizeof(list_t));
     new->head = 0;
     new->len = 0;
+    new->lock = malloc(sizeof(struct mutex_t));
+    mutex_init(new->lock);
     return new;
 }
 
@@ -89,17 +97,22 @@ void list_free(list_t *l) {
             free(cur);
             cur = next;
     }
+    free(l->lock);
     free(l);
 }
 
 item_t *list_get_item_by_value(list_t *l, void* v) {
+    mutex_lock(l->lock);
     if(l->head == 0 || l == 0) return NULL;
+
     item_t *cur = l->head;
     while(cur) {
         if(cur->val == v) {
+            mutex_unlock(l->lock);
             return cur;
         }
         cur = cur->next;
     }
+    mutex_unlock(l->lock);
     return NULL;
 }
