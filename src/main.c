@@ -30,6 +30,7 @@ void handle_msg(void* data, size_t len){
     for( i=0 ; i<len ; i++){
         putchar( ((char*)data)[i] );
     }
+    putchar('\n');
 }
 
 int main(void)
