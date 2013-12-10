@@ -77,7 +77,7 @@ int main(void)
             //print something neighbour related here
         }
         gossip_cleanup();
-        //gossip_free_node_list(neighbours);
+        gossip_free_node_list(neighbours);
     }
     return 0;
 }
