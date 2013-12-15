@@ -19,6 +19,7 @@
 #include "thread.h"
 
 #include "gossip.h"
+#include "leader.h"
 
 #define ENABLE_DEBUG (1)
 #include <debug.h>
@@ -39,6 +40,8 @@ int main(void)
     uint16_t id;
     timex_t time;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
+    uint16_t leader;
+    char is_leader=1;
     gossip_node_list_t *neighbours;
 
     // TODO: figure out what this does:
@@ -75,15 +78,17 @@ int main(void)
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
-        for( i=0; i<neighbours->length; i++ ){
-            //print something neighbour related here
+        // initiate leader election
+        printf("Starting leader election.\n");
+        leader = leader_elect(id);
+        if(leader!=id){
+            is_leader=0;
         }
-
         // Send a message to a random neighbour
-        sprintf(msg_buffer, "%s%sThis is message %i from node %i",
-                PREAMBLE, MSG, count++, id);
-        gossip_node_t* node = gossip_get_neighbour_random();
-        gossip_send(node, msg_buffer, strlen(msg_buffer));
+        //sprintf(msg_buffer, "%s%sThis is message %i from node %i",
+        //        PREAMBLE, MSG, count++, id);
+        //gossip_node_t* node = gossip_get_neighbour_random();
+        //gossip_send(node, msg_buffer, strlen(msg_buffer));
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
