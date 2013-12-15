@@ -23,7 +23,7 @@ uint16_t leader_elect(uint16_t source){
         sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, source);
         node = gossip_get_neighbour_random();
         gossip_send(node, msg_buffer, strlen(msg_buffer));
-        vtimer_usleep(1000*1000*2);
+        vtimer_usleep(1000*1000*5);
     }
     return leader;
 }
@@ -38,18 +38,20 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         DEBUG("Warning: msg does not start with leader election prefix.\n");
         return;
     }
-    received_leader = sscanf(msg_text+strlen(LE),"%i", &received_leader);
-    printf("%i\n",received_leader);
+    received_leader = atol( msg_text+strlen(LE) );
+    printf("current leader candidate: %i\n",received_leader);
 
     // if new message contains worse leader candidate, inform node directly
     // TODO: add custom metrics functions here instead of a<b
     if(received_leader < leader ){
+        DEBUG("discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, src);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
     }
     // update leader if we receive a better candidate
     if(received_leader > leader ){
+        DEBUG("adding a new, better leader\n");
         leader=received_leader; 
     }
 };
