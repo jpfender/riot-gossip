@@ -45,6 +45,11 @@ void gossip_free_node_list(gossip_node_list_t* nl);
 // returns NULL in case of failure
 gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy);
 
+// choose a random node
+// returns node on success
+// return NULL in case of failure
+gossip_node_t* gossip_get_neighbour_random(void);
+
 // send a message to some node
 // returns 0 on success
 // return error code in case of failure
@@ -54,3 +59,6 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len);
 // signature: handle(void *data, size_t length)
 void gossip_register_msg_handler(void (*handle) (void*,size_t));
   
+
+// removes neighbours from global list after CLEANUP_THRESHOLD time
+void gossip_cleanup(void);
