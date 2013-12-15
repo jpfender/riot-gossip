@@ -26,7 +26,7 @@ msg_t msg_q[RCV_BUFFER_SIZE];
 int gossip_handle_msg(radio_packet_t* p);
 int gossip_handle_announce(radio_packet_t* p);
 
-static void (*gossip_application_msg_handler) (void*,size_t) = 0;
+static void (*gossip_application_msg_handler) (void*,size_t, uint16_t) = 0;
 
 list_t *neighbours = 0;
 
@@ -283,6 +283,6 @@ void gossip_cleanup(void) {
     }
 }
 
-void gossip_register_msg_handler(void (*handle) (void*,size_t)) {
+void gossip_register_msg_handler(void (*handle) (void*,size_t,uint16_t)) {
     gossip_application_msg_handler = handle;
 }
