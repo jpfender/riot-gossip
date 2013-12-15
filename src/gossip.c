@@ -5,6 +5,7 @@
 #include <string.h>
 #include "protocol.h"
 #include "hwtimer.h"
+#include "vtimer.h"
 
 #define ENABLE_DEBUG (1)
 #include "debug.h"
@@ -37,7 +38,6 @@ int transceiver_thread = 0;
 void gossip_radio(void) {
     msg_t m;
     radio_packet_t *p;
-    uint8_t i;
 
     msg_init_queue(msg_q, RCV_BUFFER_SIZE);
 
@@ -214,7 +214,7 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 void gossip_update_neighbour(radio_packet_t* p) {
     gossip_node_t *node = gossip_find_node_by_id(p->src);
     if(!node) {
-        DEBUG("adding new node: %ld\n", p->src);
+        DEBUG("adding new node: %i\n", p->src);
         node = malloc(sizeof(gossip_node_t));
         node->id = p->src;
         list_add_item(neighbours, node);
@@ -249,10 +249,10 @@ int gossip_handle_msg(radio_packet_t* p) {
         msg_text += strlen(MSG);
         cur_len -= strlen(MSG);
         if(gossip_application_msg_handler) {
-            gossip_application_msg_handler(msg_text,cur_len);
+            gossip_application_msg_handler(msg_text,cur_len, p->src);
         }
         else {
-            DEBUG("WARNING: got msg but handler was not set\n", p->src);
+            DEBUG("WARNING: got msg from %i but handler was not set\n", p->src);
         }
         return 0;
     }
@@ -261,7 +261,7 @@ int gossip_handle_msg(radio_packet_t* p) {
 }
 
 int gossip_handle_announce(radio_packet_t* p) {
-    DEBUG("got an announce from: %ld\n", p->src);
+    DEBUG("got an announce from: %i\n", p->src);
     return 0;
 }
 
@@ -276,7 +276,7 @@ void gossip_cleanup(void) {
             DEBUG("forgetting about node %d\n", node->id);
             list_remove_item(neighbours, cur);
         } else {
-            DEBUG("will forget %d in %ld seconds\n", node->id,
+            DEBUG("will forget %i in %i seconds\n", node->id,
                 (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
         }
         cur = list_get_next(cur);

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "vtimer.h"
 #include "rtc.h"
@@ -38,8 +39,6 @@ int main(void)
     uint16_t id;
     timex_t time;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
-    int main_pid = thread_getpid();
-    size_t i;
     gossip_node_list_t *neighbours;
 
     // TODO: figure out what this does:
