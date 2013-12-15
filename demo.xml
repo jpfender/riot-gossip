@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topology version="1">
+    <net description="riot gossiping presentation demo" name="demo">
+        <nodeTypes>
+            <nodeType name="riot-native">
+                <interfaces>
+                    <interface name="cc2420" type="802.15.4"/>
+                </interfaces>
+            </nodeType>
+        </nodeTypes>
+        <nodes>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="1" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="2" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="3" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="4" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="5" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="6" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="7" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="8" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="9" type="riot-native"/>
+            <node binary="/home/mk/src/riot-gossip/src/bin/riot-gossip.elf" name="10" type="riot-native"/>
+        </nodes>
+        <links>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="1" loss="0.0" to_if="cc2420" to_node="2" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="3" loss="0.0" to_if="cc2420" to_node="2" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="2" loss="0.0" to_if="cc2420" to_node="7" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="7" loss="0.0" to_if="cc2420" to_node="9" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="7" loss="0.0" to_if="cc2420" to_node="10" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="9" loss="0.0" to_if="cc2420" to_node="4" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="10" loss="0.0" to_if="cc2420" to_node="6" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="4" loss="0.0" to_if="cc2420" to_node="6" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="6" loss="0.0" to_if="cc2420" to_node="5" uni="false"/>
+            <link broadcast_loss="0.0" from_if="cc2420" from_node="4" loss="0.0" to_if="cc2420" to_node="8" uni="false"/>
+        </links>
+    </net>
+</topology>
