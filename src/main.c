@@ -21,7 +21,7 @@
 #include "gossip.h"
 #include "leader.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include <debug.h>
 
 void handle_msg(void* data, size_t len){
@@ -58,6 +58,7 @@ int main(void)
         DEBUG("gossip_init(%d) failed\n", transceiver);
         return 1;
     }
+    printf("I am %i\n",id);
 
     puts("Registering sample gossip message handler.");
     gossip_register_msg_handler(handle_msg);
