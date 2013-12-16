@@ -40,6 +40,11 @@ gossip_node_list_t* gossip_get_all_neighbours();
 // returns nothing
 void gossip_free_node_list(gossip_node_list_t* nl);
 
+// look through the list for a node with id
+// returns pointer to that node on success
+// returns NULL in case of failure
+gossip_node_t* gossip_find_node_by_id(uint16_t id);
+
 // choose specific node by some strategy
 // returns node on success
 // returns NULL in case of failure
