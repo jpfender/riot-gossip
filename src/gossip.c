@@ -144,6 +144,10 @@ gossip_node_t* gossip_get_neighbour_random() {
     item_t *cur = list_get_head(neighbours);
     uint32_t i = 0;
 
+    if(len==0){
+        return NULL;
+    }
+
     uint32_t rand = genrand_uint32();
     rand = rand % len;
 
