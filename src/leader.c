@@ -27,7 +27,7 @@ uint16_t leader_elect(uint16_t source){
             return leader;
         }
         gossip_send(node, msg_buffer, strlen(msg_buffer));
-        vtimer_usleep(1000*1000*5);
+        vtimer_usleep(1000*1000*10);
     }
     return leader;
 }
@@ -42,15 +42,18 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         return;
     }
     received_leader = atol((char*)msg_text+strlen(LE));
+    printf("received candidate: %i\n",received_leader);
 
     // if new message contains worse leader candidate, inform node directly
     // TODO: add custom metrics functions here instead of a<b
+#if 0
     if(received_leader < leader ){
         DEBUG("discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
     }
+#endif
     // update leader if we receive a better candidate
     if(received_leader > leader ){
         DEBUG("adding a new, better leader\n");
