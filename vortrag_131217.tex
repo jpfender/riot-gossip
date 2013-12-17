@@ -113,10 +113,6 @@ Mobilkommunikation}
 
 \begin{frame}[fragile]
   \frametitle{Code snippets}
-  \lstinputlisting[linerange={4-5,6-8}]{src/main.c}
-\end{frame}
-\begin{frame}[fragile]
-  \frametitle{Code snippets}
   \lstinputlisting[linerange={4-5,6-8}]{src/gossip.c}
 \end{frame}
 \begin{frame}[fragile]
@@ -144,8 +140,8 @@ Mobilkommunikation}
       \item If a node doesn't know who the leader is, it elects itself
 
       % FIXME: do we really want to do that?
-      \item Any gossip communication carries ID of currently known
-        leader in header
+      % \item Any gossip communication carries ID of currently known
+      %   leader in header
 
       \item If a node receives a leader ID that's ``better`` than the
         one it currently knows, it adapts that leader as new leader
@@ -157,6 +153,11 @@ Mobilkommunikation}
         true leader
     \end{itemize}
 }
+
+\begin{frame}[fragile]
+  \frametitle{Leader election -- Code snippet}
+  \lstinputlisting[basicstyle=\scriptsize\ttfamily, linerange={15-15,20-33}]{src/leader.c}
+\end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Leader election -- example}
