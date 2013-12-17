@@ -1,4 +1,5 @@
-\documentclass[ngerman]{beamer}
+\documentclass[ngerman,xcolor=svgnames]{beamer}
+% colors: http://www.math.umbc.edu/~rouben/beamer/quickstart-Z-H-25.html#node_sec_25
 
 \usepackage[german]{babel}
 \usepackage[T1]{fontenc}
@@ -85,7 +86,13 @@ Mobilkommunikation}
     \begin{itemize}
       \item Leader election implementation
     \end{itemize}
+  \item \textbf{Work to be done:}
+    \begin{itemize}
+      \item Time Synchronization specification
+      \item Build on MSB-A2 boards
+    \end{itemize}
 \end{itemize}
+\vspace{30pt}
 }
 
 \frame{
@@ -106,8 +113,15 @@ Mobilkommunikation}
 
 \begin{frame}[fragile]
   \frametitle{Code snippets}
-  % XXX Do we want code snippets?
-  % XXX If yes, what's relevant?
+  \lstinputlisting[linerange={4-5,6-8}]{src/main.c}
+\end{frame}
+\begin{frame}[fragile]
+  \frametitle{Code snippets}
+  \lstinputlisting[linerange={4-5,6-8}]{src/gossip.c}
+\end{frame}
+\begin{frame}[fragile]
+  \frametitle{Code snippets}
+  \lstinputlisting[linerange={4-5,6-8}]{src/leader.c}
 \end{frame}
 
 \frame{
@@ -128,8 +142,11 @@ Mobilkommunikation}
     \frametitle{Leader election -- approach}
     \begin{itemize}
       \item If a node doesn't know who the leader is, it elects itself
+
+      % FIXME: do we really want to do that?
       \item Any gossip communication carries ID of currently known
         leader in header
+
       \item If a node receives a leader ID that's ``better`` than the
         one it currently knows, it adapts that leader as new leader
       \item If a node receives a leader ID that's ``worse`` than the one it
@@ -160,6 +177,27 @@ Mobilkommunikation}
     \includegraphics<14>[scale=0.2]{assets/network_14}
   \end{center}
 \end{frame}
+
+
+\frame{
+  \huge{Desvirt}
+}
+
+\begin{frame}[fragile]
+    \frametitle{Desvirt}
+    \begin{itemize}
+        \item developed by members of AG-Tech
+        \item free software: \textcolor{Maroon}{https://github.com/des-testbed/desvirt}
+        \item topology specified as XML
+    \end{itemize}
+    \pause
+    \lstinputlisting[language=xml,basicstyle=\ttfamily\tiny,linerange={3-12,21-24,33-35}]{demo.xml}
+    \vspace{20pt}
+\end{frame}
+
+\frame{
+  \huge{Demo}
+}
 
 \begin{frame}
  \frametitle{Discussion}
