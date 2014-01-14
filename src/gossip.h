@@ -67,3 +67,12 @@ void gossip_register_msg_handler(void (*handle) (void*,size_t,uint16_t));
 
 // removes neighbours from global list after CLEANUP_THRESHOLD time
 void gossip_cleanup(void);
+
+// Hooks
+// =====
+
+// register a handler that is run upon removing a node from the
+// neighbour list
+// handler signature: int handle(gossip_node_t node_to_remove)
+// if handle returns 0 the node is removed else its kept in the list
+void gossip_register_on_remove_neighbour_handler(int (*handle) (gossip_node_t*));

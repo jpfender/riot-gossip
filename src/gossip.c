@@ -27,6 +27,7 @@ int gossip_handle_msg(radio_packet_t* p);
 int gossip_handle_announce(radio_packet_t* p);
 
 static void (*gossip_application_msg_handler) (void*,size_t, uint16_t) = 0;
+static int (*gossip_on_remove_neighbour_handler) (gossip_node_t*) = 0;
 
 list_t *neighbours = 0;
 
@@ -277,8 +278,17 @@ void gossip_cleanup(void) {
     while (cur) {
         node = (gossip_node_t*) list_get_value(cur);
         if (now.microseconds/SECOND - node->last_recv > CLEANUP_THRESHOLD) {
-            DEBUG("forgetting about node %d\n", node->id);
-            list_remove_item(neighbours, cur);
+            if (gossip_on_remove_neighbour_handler) {
+                if (gossip_on_remove_neighbour_handler(node)) {
+                    DEBUG("forgetting about node %d by handlers choice\n", node->id);
+                    list_remove_item(neighbours, cur);
+                } else {
+                    DEBUG("keeping node %d by handlers choice\n", node->id);
+                }
+            } else {
+                DEBUG("forgetting about node %d\n", node->id);
+                list_remove_item(neighbours, cur);
+            }
         } else {
             DEBUG("will forget %i in %i seconds\n", node->id,
                 (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
@@ -289,4 +299,8 @@ void gossip_cleanup(void) {
 
 void gossip_register_msg_handler(void (*handle) (void*,size_t,uint16_t)) {
     gossip_application_msg_handler = handle;
+}
+
+void gossip_register_on_remove_neighbour_handler(int (*handle) (gossip_node_t*)) {
+    gossip_on_remove_neighbour_handler = handle;
 }
