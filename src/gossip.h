@@ -61,9 +61,8 @@ gossip_node_t* gossip_get_neighbour_random(void);
 int gossip_send(gossip_node_t* node, void *gossip_message, int len);
 
 // registers callback for received application messages
-// signature: handle(void *data, size_t length)
+// signature: void handle(void *data, size_t length, uint16_t source)
 void gossip_register_msg_handler(void (*handle) (void*,size_t,uint16_t));
-
 
 // removes neighbours from global list after CLEANUP_THRESHOLD time
 void gossip_cleanup(void);
