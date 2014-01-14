@@ -17,7 +17,6 @@ uint16_t leader_elect(uint16_t source){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
-    gossip_register_msg_handler(leader_handle_msg);
     leader=source;
     for(i=0;i<ROUNDS;i++){
         sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, leader);
@@ -37,10 +36,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     gossip_node_t* node;
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
 
-    if (strncmp(msg_text, LE, strlen(LE)) != 0){
-        DEBUG("Warning: msg does not start with leader election prefix.\n");
-        return;
-    }
     received_leader = atol((char*)msg_text+strlen(LE));
     printf("received candidate: %i\n",received_leader);
 

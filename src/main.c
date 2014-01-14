@@ -20,19 +20,31 @@
 
 #include "gossip.h"
 #include "leader.h"
+#include "timesync.h"
 
 #define ENABLE_DEBUG (0)
 #include <debug.h>
 
-void handle_msg(void* data, size_t len){
+void handle_msg(void* msg_text, size_t size, uint16_t src){
     size_t i;
 
-    // assume we were sending a simple string for now
-    puts("got a message: ");
-    for( i=0 ; i<len ; i++){
-        putchar( ((char*)data)[i] );
+    if (strncmp(msg_text, LE, strlen(LE)) != 0) {
+        DEBUG("handling a leader msg");
+        leader_handle_msg(msg_text, size, src);
+    } 
+    else if (strncmp(msg_text, TS, strlen(TS)) != 0) {
+        DEBUG("handling a timesync msg");
+        timesync_handle_msg(msg_text, size, src);
     }
-    putchar('\n');
+    else {
+        // fallback
+        // assume we were sending a simple string for now
+        puts("Unknown message: ");
+        for( i=0 ; i<size; i++){
+            putchar( ((char*)msg_text)[i] );
+        }
+        putchar('\n');
+    }
 }
 
 int main(void)
@@ -68,7 +80,14 @@ int main(void)
     if( 1 != r ){
         DEBUG("gossip_announce() failed with %i\n", r);
     }
-
+    // wait for other nodes to come up
+    vtimer_usleep(1000000 * (genrand_uint32()%10));
+    // initiate leader election
+    printf("Starting initial leader election.\n");
+    leader = leader_elect(id);
+    if(leader!=id){
+        is_leader=0;
+    }
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     int count = 0;
@@ -79,12 +98,6 @@ int main(void)
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
-        // initiate leader election
-        printf("Starting leader election.\n");
-        leader = leader_elect(id);
-        if(leader!=id){
-            is_leader=0;
-        }
         // Send a message to a random neighbour
         //sprintf(msg_buffer, "%s%sThis is message %i from node %i",
         //        PREAMBLE, MSG, count++, id);
