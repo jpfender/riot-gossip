@@ -31,7 +31,6 @@ static int (*gossip_on_remove_neighbour_handler) (gossip_node_t*) = 0;
 
 list_t *neighbours = 0;
 
-
 int transceiver_thread = 0;
 
 // this function contains the message revciever loop

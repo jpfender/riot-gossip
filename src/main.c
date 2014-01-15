@@ -52,6 +52,10 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
     }
 }
 
+int handle_remove_neighbour(gossip_node_t* neighbour) {
+    return leader_handle_remove_neighbour(neighbour);
+}
+
 int main(void)
 {
     uint16_t id;
@@ -78,6 +82,9 @@ int main(void)
 
     puts("Registering sample gossip message handler.");
     gossip_register_msg_handler(handle_msg);
+
+    puts("Registering gossip on_remove_neighbour handler.");
+    gossip_register_on_remove_neighbour_handler(handle_remove_neighbour);
 
     DEBUG("Announcing.\n");
     int r = gossip_announce();

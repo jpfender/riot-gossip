@@ -3,6 +3,9 @@
 #include "transceiver.h"
 #include "protocol.h"
 
+#define OK      1
+#define KEEP    0
+
 uint32_t gossip_id;
 
 typedef enum gossip_strategy {
