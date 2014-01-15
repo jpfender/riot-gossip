@@ -64,9 +64,11 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     uint16_t received_leader;
     uint16_t round;
     gossip_node_t* node;
+    char round_buffer[3];
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
 
-    round = atol((char*)msg_text+strlen(LE));
+    strncpy( round_buffer, (char*)msg_text+strlen(LE) , sizeof(round_buffer) );
+    round = atol(round_buffer);
     if(round > election_round || election_round - round > 128)
         // A new leader election round has been started; discard old
         // leader and assume I am the leader
