@@ -70,3 +70,17 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     printf("%i\n",leader);
 }
+
+int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
+    if (neighbour->id == leader) {
+        // Leader was removed from neighbour table; start a new election
+        // round
+        election_round++;
+        // This obviously won't work as intended as of now;
+        // leader_elect() needs to be a thread. But this is the general
+        // idea.
+        leader_elect(gossip_id);
+    }
+
+    return OK;
+}
