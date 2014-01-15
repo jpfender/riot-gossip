@@ -109,7 +109,7 @@ int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
         // This obviously won't work as intended as of now;
         // leader_elect() needs to be a thread. But this is the general
         // idea.
-        leader_elect(gossip_id);
+        leader_init();
     }
 
     return OK;
