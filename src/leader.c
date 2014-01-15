@@ -95,10 +95,8 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     if(round > election_round || election_round - round > 128) {
         election_round = round;
-        leader_elect(leader);
+        leader_init();
     }
-
-    printf("%i\n",leader);
 }
 
 int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
