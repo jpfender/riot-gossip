@@ -31,7 +31,6 @@ static int (*gossip_on_remove_neighbour_handler) (gossip_node_t*) = 0;
 
 list_t *neighbours = 0;
 
-uint32_t gossip_id;
 
 int transceiver_thread = 0;
 
@@ -266,7 +265,15 @@ int gossip_handle_msg(radio_packet_t* p) {
 }
 
 int gossip_handle_announce(radio_packet_t* p) {
-    DEBUG("got an announce from: %i\n", p->src);
+    char msg_buffer[strlen(PREAMBLE) + strlen(ANNOUNCE) + 1];
+
+    gossip_node_t* node = gossip_find_node_by_id(p->src);
+
+    if( ! p->dst ){
+        DEBUG("respnding to an announce from: %i\n", p->src);
+        sprintf(msg_buffer, "%s%s", PREAMBLE, ANNOUNCE);
+        return gossip_send(node, msg_buffer, strlen(msg_buffer));
+    }
     return 0;
 }
 

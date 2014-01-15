@@ -3,6 +3,8 @@
 #include "transceiver.h"
 #include "protocol.h"
 
+uint32_t gossip_id;
+
 typedef enum gossip_strategy {
     RANDOM,
     OLDEST_FIRST

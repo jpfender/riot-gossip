@@ -7,7 +7,7 @@
 #include "leader.h"
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 uint16_t leader=0;
@@ -29,8 +29,9 @@ int leader_init(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
-    DEBUG("initial leader: %d\n",gossip_id);
-    sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, gossip_id);
+    leader=gossip_id;
+    DEBUG("initial leader: %d\n",leader);
+    sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, leader);
     node = gossip_get_neighbour(RANDOM);
     if(!node){
         DEBUG("Warning: no neighbours, election failed.\n");
@@ -44,7 +45,6 @@ int leader_elect(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
-    leader=gossip_id;
     for(int i=0;i<ROUNDS;i++){
         sprintf(msg_buffer, "%s%s%s%i", PREAMBLE, MSG, LE, leader);
         node = gossip_get_neighbour(RANDOM);
