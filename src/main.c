@@ -25,15 +25,20 @@
 #define ENABLE_DEBUG (0)
 #include <debug.h>
 
+char leader_stack[LEADER_STACK_SIZE];
+
 void handle_msg(void* msg_text, size_t size, uint16_t src){
     size_t i;
 
-    if (strncmp(msg_text, LE, strlen(LE)) != 0) {
-        DEBUG("handling a leader msg");
+    if (strncmp(msg_text, LE, strlen(LE)) == 0) {
+        if( ! leader_get_active() ){
+            thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN - 1,
+                            CREATE_STACKTEST, leader_elect, "Leader");
+            leader_set_active(1);
+        }
         leader_handle_msg(msg_text, size, src);
     } 
-    else if (strncmp(msg_text, TS, strlen(TS)) != 0) {
-        DEBUG("handling a timesync msg");
+    else if (strncmp(msg_text, TS, strlen(TS)) == 0) {
         timesync_handle_msg(msg_text, size, src);
     }
     else {
@@ -52,7 +57,6 @@ int main(void)
     uint16_t id;
     timex_t time;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
-    uint16_t leader;
     char is_leader=1;
     gossip_node_list_t *neighbours;
 
@@ -80,14 +84,9 @@ int main(void)
     if( 1 != r ){
         DEBUG("gossip_announce() failed with %i\n", r);
     }
-    // wait for other nodes to come up
-    vtimer_usleep(1000000 * (genrand_uint32()%10));
     // initiate leader election
     printf("Starting initial leader election.\n");
-    leader = leader_elect(id);
-    if(leader!=id){
-        is_leader=0;
-    }
+    leader_init();
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     int count = 0;
@@ -98,6 +97,7 @@ int main(void)
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
+        printf("Current leader: %d\n", leader_get_leader());
         // Send a message to a random neighbour
         //sprintf(msg_buffer, "%s%sThis is message %i from node %i",
         //        PREAMBLE, MSG, count++, id);

@@ -1,8 +1,10 @@
 #include <stdint.h>
 
 #define LE "LEADER_ELECTION:"
-#define ROUNDS 10
+#define ROUNDS (3)
+#define LEADER_STACK_SIZE   (16384)
 
 
-uint16_t leader_elect(uint16_t);
+int leader_init();
+int leader_elect();
 void leader_handle_msg(void*,size_t,uint16_t);
