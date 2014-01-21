@@ -230,6 +230,7 @@ void gossip_update_neighbour(radio_packet_t* p) {
 int gossip_handle_msg(radio_packet_t* p) {
     char *msg_text = (char*) p->data;
     size_t cur_len = p->length;
+    msg_text[cur_len] = '\0';
 
     // check if it is a gossip packet
     if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE)))
