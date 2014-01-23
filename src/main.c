@@ -99,8 +99,10 @@ int main(void)
     int count = 0;
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + 100];
     while (1) {
-        vtimer_usleep(1000000 * (genrand_uint32()%10));
-        DEBUG("Re-Announcing.\n");
+        unsigned long delay = 1000000 * ((genrand_uint32()%10) + 1);
+        printf("sleeping %lums\n", delay);
+        vtimer_usleep(delay);
+        printf("Re-Announcing.\n");
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
