@@ -64,9 +64,6 @@ int main(void)
     char is_leader=1;
     gossip_node_list_t *neighbours;
 
-    // TODO: figure out what this does:
-    posix_open(uart0_handler_pid, 0);
-
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
     printf("Initializing gossiping.\n");
