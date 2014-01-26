@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2013 Ludwig Ortmann <ludwig.ortmann@fu-berlin.de>
- */
-
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
