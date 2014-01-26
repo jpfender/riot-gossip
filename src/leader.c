@@ -26,12 +26,18 @@ void leader_set_active(char value){
     active=value;
 }
 
+uint16_t leader_set_leader(uint16_t new_leader){
+    leader=new_leader;
+}
 uint16_t leader_get_leader(){
     return leader;
 }
 
-char leader_initialized(){
-    return initialized; 
+char leader_set_initialized(char v){
+    initialized=v;
+}
+char leader_get_initialized(){
+    return initialized;
 }
 
 int leader_init(){
@@ -43,7 +49,6 @@ int leader_init(){
         node = gossip_get_neighbour(RANDOM);
     }
     if(!node){
-        leader=gossip_id;
         WARN("W: no non-leader neighbours, election init failed.\n");
         return 1;
     }

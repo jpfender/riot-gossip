@@ -82,6 +82,7 @@ int main(void)
         return 1;
     }
     printf("I am %i\n",id);
+    leader_set_leader(id);
 
 
     DEBUG("D: Announcing.\n");
@@ -101,9 +102,11 @@ int main(void)
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
-        if( neighbours->length && ! leader_initialized() ){
+        if( neighbours->length && ! leader_get_initialized() ){
             printf("Starting initial leader election.\n");
+            leader_set_leader(gossip_id);
             leader_init();
+            leader_set_initialized(1);
         }
         printf("Current leader: %d\n", leader_get_leader());
         // Send a message to a random neighbour
