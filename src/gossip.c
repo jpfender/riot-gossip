@@ -194,6 +194,7 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy) {
 
 int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 
+    int r;
     msg_t mesg;
     transceiver_command_t tcmd;
     radio_packet_t p;
@@ -212,9 +213,11 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     }
     p.data = gossip_message;
 
-    int r = msg_send(&mesg, transceiver_pid, 1);
+    if( ! msg_send(&mesg, transceiver_pid, 1) )
+        return 1;
+
     hwtimer_wait(HWTIMER_TICKS(SENDING_DELAY));
-    return r;
+    return 0;
 }
 
 void gossip_update_neighbour(radio_packet_t* p) {
@@ -236,8 +239,10 @@ int gossip_handle_msg(radio_packet_t* p) {
     msg_text[cur_len] = '\0';
 
     // check if it is a gossip packet
-    if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE)))
-        return -1;
+    if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE))){
+        WARN("W: non-gossip packet received");
+        return 0;
+    }
 
     // strip premable and update msg length
     msg_text += strlen(PREAMBLE);
