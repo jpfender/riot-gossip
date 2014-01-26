@@ -72,10 +72,9 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     
     DEBUG("D: got round %i (current round %i)\n",round,election_round);
     
-    // a new election round, invalidate leader and elect the next one
+    // A new leader election round has been started; discard old
+    // leader and assume I am the leader
     if(round > election_round) { // TODO: fix possible overflow
-        // A new leader election round has been started; discard old
-        // leader and assume I am the leader
         DEBUG("D: got new election round %i (was %i)\n",round,election_round);
         leader = gossip_id;
         election_round = round;
@@ -85,9 +84,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     // got leader from an old round, inform sending node
     if(round < election_round) { // TODO: fix possible overflow
-        // A new leader election round has been started; discard old
-        // leader and assume I am the leader
-        DEBUG("got round %i (current is %i) informing sender\n",round,election_round);
+        DEBUG("D: got round %i (current is %i) informing sender\n",round,election_round);
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
