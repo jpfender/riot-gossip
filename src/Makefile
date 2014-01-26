@@ -21,6 +21,6 @@ USEMODULE += random
 #USEMODULE += uart0
 #USEMODULE += posix
 
-INCLUDES += -I./
+INCLUDES += -I./ -I$(RIOTBASE)/sys/include -I$(RIOTBASE)/drivers/include
 
 include $(RIOTBASE)/Makefile.include
