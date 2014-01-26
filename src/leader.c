@@ -30,10 +30,17 @@ int leader_init(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
-    leader=gossip_id;
     DEBUG("initial leader: %d\n",leader);
-    sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
+    DEBUG("D: Current round: %i\n", election_round);
+
     node = gossip_get_neighbour(RANDOM);
+    while (node->id == leader) {
+        node = gossip_get_neighbour(RANDOM);
+    }
+
+    leader=gossip_id;
+    sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
+
     if(!node){
         DEBUG("Warning: no neighbours, election failed.\n");
         return 1;
