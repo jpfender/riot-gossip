@@ -7,8 +7,11 @@
 #include "hwtimer.h"
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
+
+#define ENABLE_WARN (1)
+#include "warn.h"
 
 #define SND_BUFFER_SIZE     (100)
 #define RCV_BUFFER_SIZE     (64)
@@ -47,16 +50,16 @@ void gossip_radio(void) {
             p = (radio_packet_t*) m.content.ptr;
 
             if(gossip_handle_msg(p)) {
-                DEBUG("E: Handle gossip msg failed\n");
+                puts("E: Handle gossip msg failed\n");
             }
 
             p->processing--;
         }
         else if (m.type == ENOBUFFER) {
-            DEBUG("W: Transceiver buffer full\n");
+            WARN("W: Transceiver buffer full\n");
         }
         else {
-            DEBUG("W: Unknown packet received\n");
+            WARN("W: Unknown packet received\n");
         }
     }
 }
@@ -256,7 +259,7 @@ int gossip_handle_msg(radio_packet_t* p) {
             gossip_application_msg_handler(msg_text,cur_len, p->src);
         }
         else {
-            DEBUG("W: got msg from %i but handler was not set\n", p->src);
+            WARN("W: got msg from %i but handler was not set\n", p->src);
         }
         return 0;
     }

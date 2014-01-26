@@ -25,6 +25,9 @@
 #define ENABLE_DEBUG (0)
 #include <debug.h>
 
+#define ENABLE_WARN (1)
+#include <warn.h>
+
 char leader_stack[LEADER_STACK_SIZE];
 
 void handle_msg(void* msg_text, size_t size, uint16_t src){
@@ -72,7 +75,7 @@ int main(void)
     genrand_init( time.microseconds );
     id = (uint16_t)genrand_uint32();
     if( 0 != gossip_init(id,transceiver) ){
-        DEBUG("gossip_init(%d) failed\n", transceiver);
+        DEBUG("D: gossip_init(%d) failed\n", transceiver);
         return 1;
     }
     printf("I am %i\n",id);
@@ -83,10 +86,10 @@ int main(void)
     puts("Registering gossip on_remove_neighbour handler.");
     gossip_register_on_remove_neighbour_handler(handle_remove_neighbour);
 
-    DEBUG("Announcing.\n");
+    DEBUG("D: Announcing.\n");
     int r = gossip_announce();
     if( 1 != r ){
-        DEBUG("gossip_announce() failed with %i\n", r);
+        DEBUG("D: gossip_announce() failed with %i\n", r);
     }
     // initiate leader election
     printf("Starting initial leader election.\n");
