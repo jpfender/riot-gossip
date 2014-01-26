@@ -34,6 +34,10 @@ int leader_init(){
     gossip_node_t* node;
 
     node = gossip_get_neighbour(RANDOM);
+    if(!node){
+        WARN("W: no neighbours, election failed.\n");
+        return 1;
+    }
     while (node->id == leader) {
         node = gossip_get_neighbour(RANDOM);
     }
@@ -42,12 +46,7 @@ int leader_init(){
     DEBUG("D: initial leader: %d\n",leader);
     sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
 
-    if(!node){
-        WARN("W: no neighbours, election failed.\n");
-        return 1;
-    } else {
-        return gossip_send(node, msg_buffer, strlen(msg_buffer));
-    }
+    return gossip_send(node, msg_buffer, strlen(msg_buffer));
 }
 
 int leader_elect(){
