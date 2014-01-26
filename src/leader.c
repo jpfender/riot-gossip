@@ -15,6 +15,7 @@
 
 uint16_t leader=0;
 char active=0;
+char initialized=0;
 uint16_t election_round=0;
 
 char leader_get_active(){
@@ -29,6 +30,10 @@ uint16_t leader_get_leader(){
     return leader;
 }
 
+char leader_initialized(){
+    return initialized; 
+}
+
 int leader_init(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
@@ -38,11 +43,11 @@ int leader_init(){
         node = gossip_get_neighbour(RANDOM);
     }
     if(!node){
+        leader=gossip_id;
         WARN("W: no non-leader neighbours, election init failed.\n");
         return 1;
     }
 
-    leader=gossip_id;
     DEBUG("D: initial leader: %d\n",leader);
     sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
 
@@ -116,6 +121,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         DEBUG("D: adding a new, better leader\n");
         leader = received_leader;
     }
+    DEBUG("D: leader_handle_msg successful\n");
 }
 
 int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
