@@ -7,8 +7,11 @@
 #include "hwtimer.h"
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
+
+#define ENABLE_WARN (1)
+#include "warn.h"
 
 #define SND_BUFFER_SIZE     (100)
 #define RCV_BUFFER_SIZE     (64)
@@ -47,16 +50,16 @@ void gossip_radio(void) {
             p = (radio_packet_t*) m.content.ptr;
 
             if(gossip_handle_msg(p)) {
-                DEBUG("E: Handle gossip msg failed\n");
+                puts("E: Handle gossip msg failed\n");
             }
 
             p->processing--;
         }
         else if (m.type == ENOBUFFER) {
-            DEBUG("W: Transceiver buffer full\n");
+            WARN("W: Transceiver buffer full\n");
         }
         else {
-            DEBUG("W: Unknown packet received\n");
+            WARN("W: Unknown packet received\n");
         }
     }
 }
@@ -191,6 +194,7 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy) {
 
 int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 
+    int r;
     msg_t mesg;
     transceiver_command_t tcmd;
     radio_packet_t p;
@@ -209,9 +213,11 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     }
     p.data = gossip_message;
 
-    int r = msg_send(&mesg, transceiver_pid, 1);
+    if( ! msg_send(&mesg, transceiver_pid, 1) )
+        return 1;
+
     hwtimer_wait(HWTIMER_TICKS(SENDING_DELAY));
-    return r;
+    return 0;
 }
 
 void gossip_update_neighbour(radio_packet_t* p) {
@@ -233,8 +239,10 @@ int gossip_handle_msg(radio_packet_t* p) {
     msg_text[cur_len] = '\0';
 
     // check if it is a gossip packet
-    if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE)))
-        return -1;
+    if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE))){
+        WARN("W: non-gossip packet received");
+        return 0;
+    }
 
     // strip premable and update msg length
     msg_text += strlen(PREAMBLE);
@@ -256,7 +264,7 @@ int gossip_handle_msg(radio_packet_t* p) {
             gossip_application_msg_handler(msg_text,cur_len, p->src);
         }
         else {
-            DEBUG("W: got msg from %i but handler was not set\n", p->src);
+            WARN("W: got msg from %i but handler was not set\n", p->src);
         }
         return 0;
     }

@@ -10,6 +10,9 @@
 #define ENABLE_DEBUG (1)
 #include "debug.h"
 
+#define ENABLE_WARN (1)
+#include "warn.h"
+
 uint16_t leader=0;
 char active=0;
 uint16_t election_round=0;
@@ -30,19 +33,17 @@ int leader_init(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
-    DEBUG("initial leader: %d\n",leader);
-    DEBUG("D: Current round: %i\n", election_round);
-
     node = gossip_get_neighbour(RANDOM);
     while (node->id == leader) {
         node = gossip_get_neighbour(RANDOM);
     }
 
     leader=gossip_id;
+    DEBUG("D: initial leader: %d\n",leader);
     sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
 
     if(!node){
-        DEBUG("Warning: no neighbours, election failed.\n");
+        WARN("W: no neighbours, election failed.\n");
         return 1;
     } else {
         return gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -57,7 +58,7 @@ int leader_elect(){
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_get_neighbour(RANDOM);
         if(!node){
-            DEBUG("Warning: no neighbours, election failed.\n");
+            WARN("W: no neighbours, election failed.\n");
             return 1;
         }
         gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -81,8 +82,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     // a new election round, invalidate leader and elect the next one
     if(round > election_round) { // TODO: fix possible overflow
-        // A new leader election round has been started; discard old
-        // leader and assume I am the leader
         DEBUG("D: got new election round %i (was %i)\n",round,election_round);
         leader = gossip_id;
         election_round = round;
@@ -92,9 +91,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     // got leader from an old round, inform sending node
     if(round < election_round) { // TODO: fix possible overflow
-        // A new leader election round has been started; discard old
-        // leader and assume I am the leader
-        DEBUG("got round %i (current is %i) informing sender\n",round,election_round);
+        DEBUG("D: got round %i (current is %i) informing sender\n",round,election_round);
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -108,7 +105,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     // TODO: add custom metrics functions here instead of a<b
 #if 1
     if(received_leader < leader ){
-        DEBUG("discarding candidate and informing sender\n");
+        DEBUG("D: discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -117,7 +114,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     // update leader if we receive a better candidate
     if(received_leader > leader ){
-        DEBUG("adding a new, better leader\n");
+        DEBUG("D: adding a new, better leader\n");
         leader = received_leader;
     }
 }
