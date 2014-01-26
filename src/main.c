@@ -89,9 +89,6 @@ int main(void)
     if( 1 != r ){
         DEBUG("D: gossip_announce() failed with %i\n", r);
     }
-    // initiate leader election
-    printf("Starting initial leader election.\n");
-    leader_init();
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     int count = 0;
@@ -104,6 +101,10 @@ int main(void)
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
         printf("There are %d neighbours\n", neighbours->length);
+        if( neighbours->length && ! leader_initialized() ){
+            printf("Starting initial leader election.\n");
+            leader_init();
+        }
         printf("Current leader: %d\n", leader_get_leader());
         // Send a message to a random neighbour
         //sprintf(msg_buffer, "%s%sThis is message %i from node %i",
