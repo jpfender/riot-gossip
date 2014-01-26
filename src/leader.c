@@ -76,9 +76,9 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     strncpy( round_buffer, (char*)msg_text+strlen(LE) , sizeof(round_buffer) );
     round = atol(round_buffer);
-    
+
     DEBUG("D: got round %i (current round %i)\n",round,election_round);
-    
+
     // a new election round, invalidate leader and elect the next one
     if(round > election_round) { // TODO: fix possible overflow
         // A new leader election round has been started; discard old
