@@ -69,7 +69,14 @@ int main(void)
 
     printf("\n\t\t\tWelcome to RIOT\n\n");
 
-    printf("Initializing gossiping.\n");
+    puts("Initializing gossiping.");
+
+    puts("Registering sample gossip message handler.");
+    gossip_register_msg_handler(handle_msg);
+
+    puts("Registering gossip on_remove_neighbour handler.");
+    gossip_register_on_remove_neighbour_handler(handle_remove_neighbour);
+
     vtimer_init();
     vtimer_now(&time);
     genrand_init( time.microseconds );
@@ -80,11 +87,6 @@ int main(void)
     }
     printf("I am %i\n",id);
 
-    puts("Registering sample gossip message handler.");
-    gossip_register_msg_handler(handle_msg);
-
-    puts("Registering gossip on_remove_neighbour handler.");
-    gossip_register_on_remove_neighbour_handler(handle_remove_neighbour);
 
     DEBUG("D: Announcing.\n");
     int r = gossip_announce();
