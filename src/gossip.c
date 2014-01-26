@@ -42,21 +42,21 @@ void gossip_radio(void) {
 
     while (1) {
         msg_receive(&m);
-        DEBUG("gossip_radio received something\n");
+        DEBUG("D: gossip_radio received something\n");
         if (m.type == PKT_PENDING) {
             p = (radio_packet_t*) m.content.ptr;
 
             if(gossip_handle_msg(p)) {
-                DEBUG("Handle gossip msg failed");
+                DEBUG("E: Handle gossip msg failed\n");
             }
 
             p->processing--;
         }
         else if (m.type == ENOBUFFER) {
-            DEBUG("Transceiver buffer full");
+            DEBUG("W: Transceiver buffer full\n");
         }
         else {
-            DEBUG("Unknown packet received");
+            DEBUG("W: Unknown packet received\n");
         }
     }
 }
@@ -87,7 +87,7 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     mesg.content.ptr = (char *) &tcmd;
     mesg.type = SET_ADDRESS;
 
-    DEBUG("trying to set address %i\n", id);
+    DEBUG("D: trying to set address %i\n", id);
     msg_send_receive(&mesg, &mesg, transceiver_pid);
 
     hwtimer_wait(HWTIMER_TICKS(WAIT_TIME * SECOND));
@@ -217,7 +217,7 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 void gossip_update_neighbour(radio_packet_t* p) {
     gossip_node_t *node = gossip_find_node_by_id(p->src);
     if(!node) {
-        DEBUG("adding new node: %i\n", p->src);
+        DEBUG("D: adding new node: %i\n", p->src);
         node = malloc(sizeof(gossip_node_t));
         node->id = p->src;
         list_add_item(neighbours, node);
@@ -256,7 +256,7 @@ int gossip_handle_msg(radio_packet_t* p) {
             gossip_application_msg_handler(msg_text,cur_len, p->src);
         }
         else {
-            DEBUG("WARNING: got msg from %i but handler was not set\n", p->src);
+            DEBUG("W: got msg from %i but handler was not set\n", p->src);
         }
         return 0;
     }
@@ -270,7 +270,7 @@ int gossip_handle_announce(radio_packet_t* p) {
     gossip_node_t* node = gossip_find_node_by_id(p->src);
 
     if( ! p->dst ){
-        DEBUG("respnding to an announce from: %i\n", p->src);
+        DEBUG("D: respnding to an announce from: %i\n", p->src);
         sprintf(msg_buffer, "%s%s", PREAMBLE, ANNOUNCE);
         return gossip_send(node, msg_buffer, strlen(msg_buffer));
     }
@@ -287,13 +287,13 @@ void gossip_cleanup(void) {
         if (now.microseconds/SECOND - node->last_recv > CLEANUP_THRESHOLD) {
             if (gossip_on_remove_neighbour_handler) {
                 if (gossip_on_remove_neighbour_handler(node)) {
-                    DEBUG("forgetting about node %d by handlers choice\n", node->id);
+                    DEBUG("D: forgetting about node %d by handlers choice\n", node->id);
                     list_remove_item(neighbours, cur);
                 } else {
-                    DEBUG("keeping node %d by handlers choice\n", node->id);
+                    DEBUG("D: keeping node %d by handlers choice\n", node->id);
                 }
             } else {
-                DEBUG("forgetting about node %d\n", node->id);
+                DEBUG("D: forgetting about node %d\n", node->id);
                 list_remove_item(neighbours, cur);
             }
         } else {
