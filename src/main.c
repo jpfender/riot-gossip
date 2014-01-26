@@ -97,7 +97,7 @@ int main(void)
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + 100];
     while (1) {
         unsigned long delay = 1000000 * ((genrand_uint32()%10) + 1);
-        printf("sleeping %lums\n", delay);
+        printf("sleeping %lums\n", delay/1000);
         vtimer_usleep(delay);
         printf("Re-Announcing.\n");
         gossip_announce();
