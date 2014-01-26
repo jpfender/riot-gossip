@@ -34,12 +34,12 @@ int leader_init(){
     gossip_node_t* node;
 
     node = gossip_get_neighbour(RANDOM);
-    if(!node){
-        WARN("W: no neighbours, election failed.\n");
-        return 1;
-    }
-    while (node->id == leader) {
+    while ( node && node->id == leader) {
         node = gossip_get_neighbour(RANDOM);
+    }
+    if(!node){
+        WARN("W: no non-leader neighbours, election init failed.\n");
+        return 1;
     }
 
     leader=gossip_id;
