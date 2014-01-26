@@ -224,7 +224,7 @@ void gossip_update_neighbour(radio_packet_t* p) {
     }
     timex_t now;
     vtimer_now(&now);
-    node->last_recv = now.microseconds/SECOND;
+    node->last_recv = now.seconds;
 }
 
 int gossip_handle_msg(radio_packet_t* p) {
@@ -284,7 +284,7 @@ void gossip_cleanup(void) {
     vtimer_now(&now);
     while (cur) {
         node = (gossip_node_t*) list_get_value(cur);
-        if (now.microseconds/SECOND - node->last_recv > CLEANUP_THRESHOLD) {
+        if (now.seconds - node->last_recv > CLEANUP_THRESHOLD) {
             if (gossip_on_remove_neighbour_handler) {
                 if (gossip_on_remove_neighbour_handler(node)) {
                     DEBUG("D: forgetting about node %d by handlers choice\n", node->id);
@@ -297,8 +297,8 @@ void gossip_cleanup(void) {
                 list_remove_item(neighbours, cur);
             }
         } else {
-            DEBUG("will forget %i in %i seconds\n", node->id,
-                (CLEANUP_THRESHOLD - now.microseconds/SECOND + node->last_recv));
+            DEBUG("D: will forget %i in %i seconds\n", node->id,
+                (CLEANUP_THRESHOLD - now.seconds + node->last_recv));
         }
         cur = list_get_next(cur);
     }
