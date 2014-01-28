@@ -58,7 +58,7 @@ int timesync_init() {
     localt.tm_year = ltime.tm_year;
     localt.tm_wday = ltime.tm_wday;
 
-    DEBUG("Current localtime: %i-%i-%i %i:%i:%i\n",
+    DEBUG("Current localtime: %i-%02i-%02i %02i:%02i:%02i\n",
             localt.tm_year + 1900,
             localt.tm_mon + 1,
             localt.tm_mday,
