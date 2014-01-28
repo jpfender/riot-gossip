@@ -115,6 +115,9 @@ int main(void)
         //gossip_node_t* node = gossip_get_neighbour_random();
         //gossip_send(node, msg_buffer, strlen(msg_buffer));
 
+        //Initialize time synchronization
+        timesync_init();
+
         gossip_cleanup();
         gossip_free_node_list(neighbours);
     }
