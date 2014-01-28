@@ -53,7 +53,10 @@ int leader_init(){
         return 1;
     }
 
+    leader = gossip_id;
+
     DEBUG("D: initial leader: %d\n",leader);
+    DEBUG("D: round: %i\n", election_round);
     sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
 
     return gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -92,7 +95,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     // a new election round, invalidate leader and elect the next one
     if(round > election_round) { // TODO: fix possible overflow
         DEBUG("D: got new election round %i (was %i)\n",round,election_round);
-        leader = gossip_id;
         election_round = round;
         leader_init();
         return;
