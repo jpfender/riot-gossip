@@ -8,7 +8,10 @@
 #include "native_internal.h"
 #include "base64.h"
 
-#define TS "TIMESYNC:"
+#define TS		"TIMESYNC:"
+#define SYNC		"SYNC:"
+#define DELAYREQ	"DELAYREQ:"
+#define DELAYRESP	"DELAYRESP:"
 
 typedef struct {
 	int tm_sec;
@@ -20,5 +23,7 @@ typedef struct {
 	int tm_wday;
 }__attribute__ ((packed)) tm_wrapper;
 
+void timesync_set_trusted(int value);
+int timesync_get_trusted();
 void timesync_handle_msg(void*, size_t, uint16_t);
 int timesync_init();

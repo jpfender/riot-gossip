@@ -38,7 +38,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
         leader_handle_msg(msg_text, size, src);
     } 
     else if (strncmp(msg_text, TS, strlen(TS)) == 0) {
-        timesync_handle_msg(msg_text, size, src);
+        timesync_handle_msg(msg_text + strlen(TS), size - strlen(TS), src);
     }
     else {
         // fallback
@@ -115,8 +115,10 @@ int main(void)
         //gossip_node_t* node = gossip_get_neighbour_random();
         //gossip_send(node, msg_buffer, strlen(msg_buffer));
 
-        //Initialize time synchronization
-        timesync_init();
+        //Time synchronization IF I am the leader OR if I received my
+        //timestamp from the leader
+        if (leader_get_leader() == gossip_id || timesync_get_trusted())
+            timesync_init();
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
