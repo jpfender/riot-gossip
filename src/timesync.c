@@ -26,10 +26,33 @@ int timesync_get_trusted() {
     return trusted;
 }
 
+char *timesync_write_tm(char *buf, tm_wrapper *time){
+    snprintf(buf,TS_STRSIZE, "%i-%02i-%02i %02i:%02i:%02i",
+                            time->tm_year + 1900,
+                            time->tm_mon + 1,
+                            time->tm_mday,
+                            time->tm_hour,
+                            time->tm_min,
+                            time->tm_sec );
+    return buf;
+}
+
+void timesync_copy_ts(struct tm* src, tm_wrapper *dst){
+    dst->tm_sec  = src->tm_sec;
+    dst->tm_min  = src->tm_min;
+    dst->tm_hour = src->tm_hour;
+    dst->tm_mday = src->tm_mday;
+    dst->tm_mon  = src->tm_mon;
+    dst->tm_year = src->tm_year;
+    dst->tm_wday = src->tm_wday;
+}
+
+
 void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
     char rcv_buffer[size];
     char ts_src_id[6];
     char enc[size];
+    char *ts_buffer = malloc(TS_STRSIZE*sizeof(char));
 
     strncpy(rcv_buffer, (char *) msg_text, size);
 
@@ -50,37 +73,17 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
             base64_decode(timestamp, enc, (uint16_t) BASE64_ENCODE_LENGTH(sizeof(tm_wrapper)) + 3);
             t1_master = (tm_wrapper *) timestamp;
 
-            DEBUG("Received T1_MASTER timestamp from %i: %i-%02i-%02i %02i:%02i:%02i\n",
-                    ts_src,
-                    t1_master->tm_year + 1900,
-                    t1_master->tm_mon + 1,
-                    t1_master->tm_mday,
-                    t1_master->tm_hour,
-                    t1_master->tm_min,
-                    t1_master->tm_sec
-                );
+            DEBUG("D: Received T1_MASTER timestamp from %i: %s\n",
+                    ts_src, timesync_write_tm(ts_buffer, t1_master) );
 
             // Get current time
             struct tm ltime;
             rtc_get_localtime(&ltime);
 
             //Wrap localtime into packed wrapper
-            t1_local.tm_sec  = ltime.tm_sec;
-            t1_local.tm_min  = ltime.tm_min;
-            t1_local.tm_hour = ltime.tm_hour;
-            t1_local.tm_mday = ltime.tm_mday;
-            t1_local.tm_mon  = ltime.tm_mon;
-            t1_local.tm_year = ltime.tm_year;
-            t1_local.tm_wday = ltime.tm_wday;
+            timesync_copy_ts(&ltime, &t1_local);
 
-            DEBUG("Current T1_LOCAL timestamp: %i-%02i-%02i %02i:%02i:%02i\n",
-                    t1_local.tm_year + 1900,
-                    t1_local.tm_mon + 1,
-                    t1_local.tm_mday,
-                    t1_local.tm_hour,
-                    t1_local.tm_min,
-                    t1_local.tm_sec
-                );
+            DEBUG("D: Current T1_LOCAL timestamp: %s\n", timesync_write_tm(ts_buffer, &t1_local) );
             
             // Sleep for 2 seconds, then record T2_LOCAL and send
             // DELAY_REQ
@@ -89,22 +92,9 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
             rtc_get_localtime(&ltime);
 
             //Wrap localtime into packed wrapper
-            t2_local.tm_sec  = ltime.tm_sec;
-            t2_local.tm_min  = ltime.tm_min;
-            t2_local.tm_hour = ltime.tm_hour;
-            t2_local.tm_mday = ltime.tm_mday;
-            t2_local.tm_mon  = ltime.tm_mon;
-            t2_local.tm_year = ltime.tm_year;
-            t2_local.tm_wday = ltime.tm_wday;
+            timesync_copy_ts(&ltime, &t2_local);
 
-            DEBUG("Current T2_LOCAL timestamp: %i-%02i-%02i %02i:%02i:%02i\n",
-                    t2_local.tm_year + 1900,
-                    t2_local.tm_mon + 1,
-                    t2_local.tm_mday,
-                    t2_local.tm_hour,
-                    t2_local.tm_min,
-                    t2_local.tm_sec
-                );
+            DEBUG("D: Current T2_LOCAL timestamp: %s\n", timesync_write_tm(ts_buffer, &t2_local) );
 
             // Send DELAY_REQ message to sender
             char msg_buffer[strlen(PREAMBLE)
@@ -126,22 +116,9 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
 
         //Wrap localtime into packed wrapper
         tm_wrapper localt;
-        localt.tm_sec = ltime.tm_sec;
-        localt.tm_min = ltime.tm_min;
-        localt.tm_hour = ltime.tm_hour;
-        localt.tm_mday = ltime.tm_mday;
-        localt.tm_mon = ltime.tm_mon;
-        localt.tm_year = ltime.tm_year;
-        localt.tm_wday = ltime.tm_wday;
+        timesync_copy_ts(&ltime, &localt);
 
-        DEBUG("Current localtime: %i-%02i-%02i %02i:%02i:%02i\n",
-                localt.tm_year + 1900,
-                localt.tm_mon + 1,
-                localt.tm_mday,
-                localt.tm_hour,
-                localt.tm_min,
-                localt.tm_sec
-            );
+        DEBUG("Current localtime: %s\n", timesync_write_tm(ts_buffer, &localt) );
 
         // Base64 encode timestamp
         char enc_r[BASE64_ENCODE_LENGTH(sizeof(tm_wrapper)) + 1];
@@ -166,14 +143,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
         base64_decode(timestamp, enc, (uint16_t) BASE64_ENCODE_LENGTH(sizeof(tm_wrapper)) + 3);
         t2_master = (tm_wrapper *) timestamp;
 
-        DEBUG("Received T2_MASTER timestamp: %i-%02i-%02i %02i:%02i:%02i\n",
-                t2_master->tm_year + 1900,
-                t2_master->tm_mon + 1,
-                t2_master->tm_mday,
-                t2_master->tm_hour,
-                t2_master->tm_min,
-                t2_master->tm_sec
-            );
+        DEBUG("Received T2_MASTER timestamp: %s\n", timesync_write_tm(ts_buffer, t2_master) );
 
         // Calculate offset
         offset = (t1_local.tm_sec - t1_master->tm_sec - t2_local.tm_sec + t2_master->tm_sec) / 2;
@@ -183,20 +153,19 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
         rtc_get_localtime(&ltime);
         ltime.tm_sec += offset;
         rtc_set_localtime(&ltime);
+        // upstream error is missing a newline :O
+        printf("\n");
 
         // Indicate that we have a trusted timestamp
         timesync_set_trusted(1);
 
-        DEBUG("Adjusted offset by %i seconds, timestamp is now: %i-%02i-%02i %02i:%02i:%02i\n",
-                offset,
-                ltime.tm_year + 1900,
-                ltime.tm_mon + 1,
-                ltime.tm_mday,
-                ltime.tm_hour,
-                ltime.tm_min,
-                ltime.tm_sec
-            );
+        tm_wrapper localt;
+        timesync_copy_ts(&ltime, &localt);
+
+        DEBUG("Adjusted offset by %i seconds, timestamp is now: %s\n",
+                offset, timesync_write_tm(ts_buffer, &localt) );
     }
+    free(ts_buffer);
 }
 
 int timesync_init() {
@@ -209,28 +178,17 @@ int timesync_init() {
         return 1;
     }
 
+    char *ts_buffer = malloc(TS_STRSIZE*sizeof(char));
+
     // Get current time
     struct tm ltime;
     rtc_get_localtime(&ltime);
 
     //Wrap localtime into packed wrapper
     tm_wrapper localt;
-    localt.tm_sec = ltime.tm_sec;
-    localt.tm_min = ltime.tm_min;
-    localt.tm_hour = ltime.tm_hour;
-    localt.tm_mday = ltime.tm_mday;
-    localt.tm_mon = ltime.tm_mon;
-    localt.tm_year = ltime.tm_year;
-    localt.tm_wday = ltime.tm_wday;
+    timesync_copy_ts(&ltime, &localt);
 
-    DEBUG("Current localtime: %i-%02i-%02i %02i:%02i:%02i\n",
-            localt.tm_year + 1900,
-            localt.tm_mon + 1,
-            localt.tm_mday,
-            localt.tm_hour,
-            localt.tm_min,
-            localt.tm_sec
-        );
+    DEBUG("Current localtime: %s\n", timesync_write_tm(ts_buffer, &localt) );
 
     // Base64 encode timestamp
     char enc[BASE64_ENCODE_LENGTH(sizeof(tm_wrapper)) + 1];
@@ -244,5 +202,6 @@ int timesync_init() {
                     + 100];
     sprintf(msg_buffer, "%s%s%s%s%05i$%s", PREAMBLE, MSG, TS, SYNC, gossip_id, enc);
 
+    free(ts_buffer);
     return gossip_send(node, msg_buffer, strlen(msg_buffer));
 }
