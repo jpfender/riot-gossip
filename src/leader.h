@@ -7,10 +7,11 @@
 
 char leader_get_active();
 void leader_set_active(char value);
-uint16_t leader_set_leader(uint16_t new_leader);
+void leader_set_leader(uint16_t new_leader);
 uint16_t leader_get_leader();
-char leader_set_initialized(char v);
+void leader_set_initialized(char v);
 char leader_get_initialized();
 int leader_init();
-int leader_elect();
+void leader_elect();
 void leader_handle_msg(void*,size_t,uint16_t);
+int leader_handle_remove_neighbour(gossip_node_t*);

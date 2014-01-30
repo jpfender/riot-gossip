@@ -26,14 +26,14 @@ void leader_set_active(char value){
     active=value;
 }
 
-uint16_t leader_set_leader(uint16_t new_leader){
+void leader_set_leader(uint16_t new_leader){
     leader=new_leader;
 }
 uint16_t leader_get_leader(){
     return leader;
 }
 
-char leader_set_initialized(char v){
+void leader_set_initialized(char v){
     initialized=v;
 }
 char leader_get_initialized(){
@@ -62,7 +62,7 @@ int leader_init(){
     return gossip_send(node, msg_buffer, strlen(msg_buffer));
 }
 
-int leader_elect(){
+void leader_elect(){
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
     gossip_node_t* node;
 
@@ -71,13 +71,12 @@ int leader_elect(){
         node = gossip_get_neighbour(RANDOM);
         if(!node){
             WARN("W: no neighbours, election failed.\n");
-            return 1;
+            return;
         }
         gossip_send(node, msg_buffer, strlen(msg_buffer));
         vtimer_usleep(1000*1000*2);
     }
     leader_set_active(0);
-    return 0;
 }
 
 void leader_handle_msg(void* msg_text, size_t size, uint16_t src){

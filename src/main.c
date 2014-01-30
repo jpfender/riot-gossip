@@ -38,7 +38,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
         leader_handle_msg(msg_text, size, src);
     } 
     else if (strncmp(msg_text, TS, strlen(TS)) == 0) {
-        timesync_handle_msg(msg_text + strlen(TS), size - strlen(TS), src);
+        timesync_handle_msg((char*)msg_text + strlen(TS), size - strlen(TS), src);
     }
     else {
         // fallback
