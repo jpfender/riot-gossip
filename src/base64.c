@@ -34,9 +34,9 @@ char *base64_encode(char *out, const unsigned char *data, uint16_t len) {
 	uint16_t o_len = BASE64_ENCODE_LENGTH(len);
 		while (i < len) {
 
-		uint32_t bits = ((i < len ? data[i++] : 0) << 16)
-				+ ((i < len ? data[i++] : 0) << 8)
-				+ (i < len ? data[i++] : 0);
+		uint32_t bits =  ((i < len ? data[i++] : 0) << 16);
+				 bits += ((i < len ? data[i++] : 0) << 8);
+				 bits += (i < len ? data[i++] : 0);
 
 		out[j++] = encode_char[(bits >> 18) & 0x3F];
 		out[j++] = encode_char[(bits >> 12) & 0x3F];
@@ -59,10 +59,10 @@ unsigned char *base64_decode(unsigned char *out, const char *data,
 
 	int i, j;
 	for (i = 0, j = 0; i < len;) {
-		uint32_t bits = (decode_char(data[i++]) << 18)
-				+ (decode_char(data[i++]) << 12)
-				+ (decode_char(data[i++]) << 6)
-				+ (decode_char(data[i++]));
+		uint32_t bits =  (decode_char(data[i++]) << 18);
+				 bits += (decode_char(data[i++]) << 12);
+				 bits += (decode_char(data[i++]) << 6);
+				 bits += (decode_char(data[i++]));
 
 		out[j++] = (bits >> 2 * 8) & 0xFF;
 		out[j++] = (bits >> 1 * 8) & 0xFF;
