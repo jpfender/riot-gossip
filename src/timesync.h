@@ -5,7 +5,6 @@
 #include <time.h>
 #include "rtc.h"
 #include "cpu.h"
-#include "native_internal.h"
 #include "base64.h"
 
 #define TS		"TIMESYNC:"

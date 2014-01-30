@@ -6,20 +6,30 @@ valgrind: CFLAGS += -g
 # name of your project
 export PROJECT = riot-gossip
 export RIOTBASE = $(CURDIR)/../../RIOT
-export BOARD = native
+export BOARD = avsextrem
 export QUIET ?= 1
 
-USEMODULE += auto_init
-USEMODULE += config
-USEMODULE += nativenet
-USEMODULE += rtc
-USEMODULE += transceiver
-USEMODULE += vtimer
 USEMODULE += random
+USEMODULE += vtimer
+USEMODULE += rtc
+USEMODULE += auto_init
 
-#USEMODULE += ltc4150 # depends on hwtimer
+ifneq (,$(findstring avsextrem,$(BOARD)))
+    USEMODULE += cc110x_ng
+    export INCLUDES += -I$(RIOTBASE)/drivers/cc110x_ng/include
+endif
+
+
+ifneq (,$(findstring native,$(BOARD)))
+    USEMODULE += nativenet
+    USEMODULE += transceiver
+endif
+
+
+#USEMODULE += ltc4150 # coulomb counter, depends on hwtimer
 #USEMODULE += uart0
 #USEMODULE += posix
+#USEMODULE += config  # stores config on board/flash
 
 INCLUDES += -I./ -I$(RIOTBASE)/sys/include -I$(RIOTBASE)/drivers/include
 

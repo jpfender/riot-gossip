@@ -201,7 +201,7 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     mesg.type = SND_PKT;
     mesg.content.ptr = (char*) &tcmd;
 
-    tcmd.transceivers = TRANSCEIVER_NATIVE;
+    tcmd.transceivers = TRANSCEIVER_TYPE;
     tcmd.data = &p;
 
     p.length = len;

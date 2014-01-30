@@ -9,7 +9,6 @@
 #include "board.h"
 #include "transceiver.h"
 #include "posix_io.h"
-#include "nativenet.h"
 #include "msg.h"
 #include "random.h"
 #include "thread.h"
