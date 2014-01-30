@@ -60,7 +60,6 @@ int main(void)
     uint16_t id;
     timex_t time;
     transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
-    char is_leader=1;
     gossip_node_list_t *neighbours;
 
     printf("\n\t\t\tWelcome to RIOT\n\n");
@@ -92,8 +91,6 @@ int main(void)
     }
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
-    int count = 0;
-    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + 100];
     while (1) {
         unsigned long delay = 1000000 * ((genrand_uint32()%10) + 1);
         printf("sleeping %lums\n", delay/1000);

@@ -194,7 +194,6 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy) {
 
 int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 
-    int r;
     msg_t mesg;
     transceiver_command_t tcmd;
     radio_packet_t p;
