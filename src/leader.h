@@ -2,7 +2,7 @@
 
 #define LE "LEADER_ELECTION:"
 #define ROUNDS (3)
-#define LEADER_STACK_SIZE   (16384)
+#define LEADER_STACK_SIZE   MINIMUM_STACK_SIZE
 
 
 char leader_get_active();

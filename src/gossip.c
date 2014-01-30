@@ -80,7 +80,7 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     gossip_radio_pid = thread_create(gossip_radio_stack_buffer,
                                      RADIO_STACK_SIZE,
                                      PRIORITY_MAIN-2,
-                                     CREATE_STACKTEST,
+                                     0,
                                      gossip_radio,
                                      "gossip_radio");
     transceiver_register(transceiver_type, gossip_radio_pid);

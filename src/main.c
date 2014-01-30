@@ -31,8 +31,8 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
 
     if (strncmp(msg_text, LE, strlen(LE)) == 0) {
         if( ! leader_get_active() ){
-            thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN - 1,
-                            CREATE_STACKTEST, leader_elect, "Leader");
+            thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN-1,
+                            0, leader_elect, "Leader");
             leader_set_active(1);
         }
         leader_handle_msg(msg_text, size, src);
