@@ -59,7 +59,7 @@ int main(void)
 {
     uint16_t id;
     timex_t time;
-    transceiver_type_t transceiver = TRANSCEIVER_NATIVE;
+    transceiver_type_t transceiver = TRANSCEIVER_TYPE;
     gossip_node_list_t *neighbours;
 
     printf("\n\t\t\tWelcome to RIOT\n\n");
