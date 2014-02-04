@@ -30,6 +30,7 @@ char blink_stack[BLINK_STACK_SIZE];
 void handle_msg(void* msg_text, size_t size, uint16_t src){
     size_t i;
 
+    /* MSG is for Leader Election */
     if (strncmp(msg_text, LE, strlen(LE)) == 0) {
         if( ! leader_get_active() ){
             thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN-1,
@@ -37,18 +38,16 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
             leader_set_active(1);
         }
         leader_handle_msg(msg_text, size, src);
-    } 
+    }
+    /* MSG is for Time Synchronization */
     else if (strncmp(msg_text, TS, strlen(TS)) == 0) {
         timesync_handle_msg((char*)msg_text + strlen(TS), size - strlen(TS), src);
     }
+    /* MSG is unknown */
     else {
-        // fallback
-        // assume we were sending a simple string for now
-        puts("Unknown message: ");
-        for( i=0 ; i<size; i++){
-            putchar( ((char*)msg_text)[i] );
-        }
-        putchar('\n');
+        WARN("W: Unknown message received.");
+        // format string black hole ahead
+        DEBUG("D: %s", msg_text);
     }
 }
 
