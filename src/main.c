@@ -16,6 +16,7 @@
 #include "gossip.h"
 #include "leader.h"
 #include "timesync.h"
+#include "blink.h"
 
 #define ENABLE_DEBUG (0)
 #include <debug.h>
@@ -24,6 +25,7 @@
 #include <warn.h>
 
 char leader_stack[LEADER_STACK_SIZE];
+char blink_stack[BLINK_STACK_SIZE];
 
 void handle_msg(void* msg_text, size_t size, uint16_t src){
     size_t i;
@@ -88,6 +90,9 @@ int main(void)
     if( 1 != r ){
         DEBUG("D: gossip_announce() failed with %i\n", r);
     }
+
+    thread_create( blink_stack, BLINK_STACK_SIZE , PRIORITY_MAIN-2,
+                            0, blink, "Blink");
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     while (1) {
