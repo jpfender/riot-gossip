@@ -3,10 +3,14 @@
 #include "transceiver.h"
 #include "protocol.h"
 
+#ifdef MODULE_MSBA2
+#define TRANSCEIVER_TYPE TRANSCEIVER_CC1100
+#endif
 #ifdef MODULE_NATIVENET
 #define TRANSCEIVER_TYPE TRANSCEIVER_NATIVE
 #endif
 #ifdef MODULE_CC110X_NG
+#include "cc110x_ng.h"
 #define TRANSCEIVER_TYPE TRANSCEIVER_CC1100
 #endif
 

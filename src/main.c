@@ -18,7 +18,7 @@
 #include "timesync.h"
 #include "blink.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include <debug.h>
 
 #define ENABLE_WARN (1)
@@ -32,6 +32,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
 
     /* MSG is for Leader Election */
     if (strncmp(msg_text, LE, strlen(LE)) == 0) {
+        DEBUG("D: received a leader election msg\n");
         if( ! leader_get_active() ){
             thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN-1,
                             0, leader_elect, "Leader");
@@ -41,6 +42,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
     }
     /* MSG is for Time Synchronization */
     else if (strncmp(msg_text, TS, strlen(TS)) == 0) {
+        DEBUG("D: received a timesync msg\n");
         timesync_handle_msg((char*)msg_text + strlen(TS), size - strlen(TS), src);
     }
     /* MSG is unknown */
@@ -76,6 +78,7 @@ int main(void)
     vtimer_now(&time);
     genrand_init( time.microseconds );
     id = (uint16_t)genrand_uint32();
+    id = 23;
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("D: gossip_init(%d) failed\n", transceiver);
         return 1;
@@ -90,8 +93,10 @@ int main(void)
         DEBUG("D: gossip_announce() failed with %i\n", r);
     }
 
+#if 0
     thread_create( blink_stack, BLINK_STACK_SIZE , PRIORITY_MAIN-2,
                             0, blink, "Blink");
+#endif
 
     // TODO: sleep for now, should receive IPC logger msg and printf here
     while (1) {

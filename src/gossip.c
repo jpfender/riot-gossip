@@ -54,6 +54,7 @@ void gossip_radio(void) {
             }
 
             p->processing--;
+            DEBUG("D: done processing radio packet\n");
         }
         else if (m.type == ENOBUFFER) {
             WARN("W: Transceiver buffer full\n");
@@ -93,9 +94,18 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     DEBUG("D: trying to set address %i\n", id);
     msg_send_receive(&mesg, &mesg, transceiver_pid);
 
-    hwtimer_wait(HWTIMER_TICKS(WAIT_TIME * SECOND));
 
     gossip_id = id;
+
+    cc110x_print_config();
+
+#ifdef MODULE_CC110X_NG
+    mesg.type = SWITCH_RX;
+    DEBUG("D: Set transceiver to SWITCH_RX\n");
+
+    if( ! msg_send(&mesg, transceiver_pid, 1) )
+        return 1;
+#endif
 
     return 0;
 }
@@ -212,10 +222,19 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     }
     p.data = gossip_message;
 
+    DEBUG("D: Set transceiver to SND_PKT\n");
     if( ! msg_send(&mesg, transceiver_pid, 1) )
         return 1;
 
-    hwtimer_wait(HWTIMER_TICKS(SENDING_DELAY));
+#ifdef MODULE_CC110X_NG
+    // immediately switch back to rx mode if on cc1100
+    mesg.type = SWITCH_RX;
+    DEBUG("D: Set transceiver to SWITCH_RX\n");
+
+    if( ! msg_send(&mesg, transceiver_pid, 1) )
+        return 1;
+#endif
+
     return 0;
 }
 

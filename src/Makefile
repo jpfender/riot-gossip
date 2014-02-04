@@ -6,13 +6,19 @@ valgrind: CFLAGS += -g
 # name of your project
 export PROJECT = riot-gossip
 export RIOTBASE = $(CURDIR)/../../RIOT
-export BOARD = avsextrem
 export QUIET ?= 1
+export BOARD = msba2
 
 USEMODULE += random
 USEMODULE += vtimer
 USEMODULE += rtc
 USEMODULE += auto_init
+
+ifneq (,$(findstring msba2,$(BOARD)))
+    USEMODULE += cc110x_ng
+    export INCLUDES += -I$(RIOTBASE)/drivers/cc110x_ng/include
+    USEMODULE += msba2_base
+endif
 
 ifneq (,$(findstring avsextrem,$(BOARD)))
     USEMODULE += cc110x_ng
