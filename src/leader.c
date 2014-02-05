@@ -93,7 +93,11 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     uint16_t round;
     gossip_node_t* node;
     char round_buffer[3];
-    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + size];
+    int len = strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + size;
+    char* msg_buffer;
+
+    msg_buffer = malloc(len);
+    memset(msg_buffer, 0, len);
 
     /* we received something, that means LE started */
     leader_set_initialized(1);
@@ -108,6 +112,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         DEBUG("D: got new election round %i (was %i)\n",round,election_round);
         election_round = round;
         leader_init();
+        free(msg_buffer);
         return;
     }
 
@@ -117,6 +122,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
+        free(msg_buffer);
         return;
     }
 
@@ -125,6 +131,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     /* XXX: misuse MAX_UID as ACK identifier */
     if(received_leader == MAX_UID){
+        free(msg_buffer);
         return;
     }
 
@@ -144,6 +151,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     node = gossip_find_node_by_id(src);
     DEBUG("D: sending msg of size %d\n",strlen(msg_buffer));
     gossip_send(node, msg_buffer, strlen(msg_buffer));
+    free(msg_buffer);
 }
 
 int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
