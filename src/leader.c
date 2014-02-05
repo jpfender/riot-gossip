@@ -7,7 +7,7 @@
 #include "leader.h"
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 #define ENABLE_WARN (1)
@@ -28,7 +28,12 @@ void leader_set_active(char value){
 
 void leader_set_leader(uint16_t new_leader){
     leader=new_leader;
+    if( new_leader == gossip_id )
+        LED_GREEN_ON;
+    else
+        LED_GREEN_OFF;
 }
+
 uint16_t leader_get_leader(){
     return leader;
 }
@@ -53,7 +58,7 @@ int leader_init(){
         return 1;
     }
 
-    leader = gossip_id;
+    leader_set_leader( gossip_id );
 
     DEBUG("D: initial leader: %d\n",leader);
     DEBUG("D: round: %i\n", election_round);
@@ -128,7 +133,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     // update leader if we receive a better candidate
     if(received_leader > leader ){
         DEBUG("D: adding a new, better leader\n");
-        leader = received_leader;
+        leader_set_leader(received_leader);
     }
     DEBUG("D: leader_handle_msg successful\n");
 }
