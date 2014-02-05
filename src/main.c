@@ -18,7 +18,9 @@
 #include "timesync.h"
 #include "blink.h"
 
-#define ENABLE_DEBUG (1)
+#include "sht11.h"
+
+#define ENABLE_DEBUG (0)
 #include <debug.h>
 
 #define ENABLE_WARN (1)
@@ -60,6 +62,7 @@ int main(void)
 {
     uint16_t id;
     timex_t time;
+    sht11_val_t sht11_val;
     transceiver_type_t transceiver = TRANSCEIVER_TYPE;
     gossip_node_list_t *neighbours;
 
@@ -75,7 +78,13 @@ int main(void)
 
     vtimer_init();
     vtimer_now(&time);
+#ifdef MODULE_SHT11
+    sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
+    genrand_init( time.microseconds | (long) sht11_val.temperature*1000 | (long) sht11_val.relhum*1000 );
+#else
     genrand_init( time.microseconds );
+#endif
+
     id = 1+((uint16_t)genrand_uint32())%254;
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("D: gossip_init(%d) failed\n", transceiver);
@@ -110,12 +119,15 @@ int main(void)
             leader_init();
             leader_set_initialized(1);
         }
-        printf("Current leader: %d\n", leader_get_leader());
-        // Send a message to a random neighbour
-        //sprintf(msg_buffer, "%s%sThis is message %i from node %i",
-        //        PREAMBLE, MSG, count++, id);
-        //gossip_node_t* node = gossip_get_neighbour_random();
-        //gossip_send(node, msg_buffer, strlen(msg_buffer));
+        /* print current state */
+#ifdef MODULE_SHT11
+        sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
+        printf("[ ID: %u || Leader: %d  || Network: %d || Temp %4.1f ]\n",
+                id, leader_get_leader(), neighbours->length, sht11_val.temperature);
+#else
+        printf("[ ID: %u || Leader: %d  || Network: %d ]\n",
+                id, leader_get_leader(), neighbours->length);
+#endif
 
         //Time synchronization IF I am the leader OR if I received my
         //timestamp from the leader

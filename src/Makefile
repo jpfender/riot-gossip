@@ -16,6 +16,7 @@ USEMODULE += auto_init
 
 ifneq (,$(findstring msba2,$(BOARD)))
     USEMODULE += cc110x_ng
+    USEMODULE += sht11
     export INCLUDES += -I$(RIOTBASE)/drivers/cc110x_ng/include
     USEMODULE += msba2_base
 endif
