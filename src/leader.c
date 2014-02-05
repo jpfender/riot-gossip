@@ -86,6 +86,9 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     char round_buffer[3];
     char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + size];
 
+    /* we received something, that means LE started */
+    leader_set_initialized(1);
+
     strncpy( round_buffer, (char*)msg_text+strlen(LE) , sizeof(round_buffer) );
     round = atol(round_buffer);
 

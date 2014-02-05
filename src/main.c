@@ -120,7 +120,6 @@ int main(void)
             leader_set_leader(gossip_id);
             /* _try_ to initialize leader election by emitting a single packet */
             leader_init();
-            leader_set_initialized(1);
         }
         /* print current state */
 #ifdef MODULE_SHT11
