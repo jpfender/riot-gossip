@@ -123,24 +123,27 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     received_leader = atol((char*)msg_text+strlen(LE)+3);
     printf("received candidate: %i\n",received_leader);
 
-    // if new message contains worse leader candidate, inform node directly
+    /* XXX: misuse MAX_UID as ACK identifier */
+    if(received_leader == MAX_UID){
+        return;
+    }
+
     // TODO: add custom metrics functions here instead of a<b
-#if 1
-    if(received_leader < leader ){
+    if(received_leader <= leader ){
         DEBUG("D: discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, leader);
-        node = gossip_find_node_by_id(src);
-        DEBUG("D: sending msg of size %d\n",strlen(msg_buffer));
-        gossip_send(node, msg_buffer, strlen(msg_buffer));
     }
-#endif
 
     // update leader if we receive a better candidate
     if(received_leader > leader ){
         DEBUG("D: adding a new, better leader\n");
         leader_set_leader(received_leader);
+        sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, MAX_UID);
     }
-    DEBUG("D: leader_handle_msg successful\n");
+
+    node = gossip_find_node_by_id(src);
+    DEBUG("D: sending msg of size %d\n",strlen(msg_buffer));
+    gossip_send(node, msg_buffer, strlen(msg_buffer));
 }
 
 int leader_handle_remove_neighbour(gossip_node_t* neighbour) {

@@ -86,7 +86,7 @@ int main(void)
     genrand_init( time.microseconds );
 #endif
 
-    id = 1+((uint16_t)genrand_uint32())%254;
+    id = 1+((uint16_t)genrand_uint32())%(MAX_UID-1);
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("D: gossip_init(%d) failed\n", transceiver);
         return 1;
