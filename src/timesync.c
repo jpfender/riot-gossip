@@ -3,10 +3,10 @@
 #include <leader.h>
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define ENABLE_WARN (1)
+#define ENABLE_WARN (0)
 #include "warn.h"
 
 tm_wrapper *t1_master;

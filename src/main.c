@@ -81,7 +81,7 @@ int main(void)
     vtimer_now(&time);
 #ifdef MODULE_SHT11
     sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
-    genrand_init( time.microseconds | (long) sht11_val.temperature*1000 | (long) sht11_val.relhum*1000 );
+    genrand_init( time.microseconds ^ (long) sht11_val.temperature*1000 ^ (long) sht11_val.relhum*1000 );
 #else
     genrand_init( time.microseconds );
 #endif
@@ -93,12 +93,6 @@ int main(void)
     }
     leader_set_leader(id);
 
-
-    DEBUG("D: Announcing.\n");
-    if( gossip_announce() ){
-        DEBUG("D: gossip_announce() failed\n");
-    }
-
 #if 0
     blink_pid = thread_create( blink_stack, BLINK_STACK_SIZE , PRIORITY_MAIN-2,
                             0, blink, "Blink");
@@ -109,27 +103,26 @@ int main(void)
         return 1;
     }
 
-    // TODO: sleep for now, should receive IPC logger msg and printf here
     while (1) {
-        unsigned long delay = 1000000 * ((genrand_uint32()%10) + 1);
-        vtimer_usleep(delay);
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
+
+        /* print current state */
+#ifdef MODULE_SHT11
+        sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
+        printf("[ ID: %u | Leader: %d | Net: %d | Temp: %4.1f ]\n",
+                id, leader_get_leader(), neighbours->length, sht11_val.temperature);
+#else
+        printf("[ ID: %u | Leader: %d | Net: %d ]\n",
+                id, leader_get_leader(), neighbours->length);
+#endif
+
         if( neighbours->length && ! leader_get_initialized() ){
             printf("Starting initial leader election.\n");
             leader_set_leader(gossip_id);
             /* _try_ to initialize leader election by emitting a single packet */
             leader_init();
         }
-        /* print current state */
-#ifdef MODULE_SHT11
-        sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
-        printf("[ ID: %u || Leader: %d  || Network: %d || Temp %4.1f ]\n",
-                id, leader_get_leader(), neighbours->length, sht11_val.temperature);
-#else
-        printf("[ ID: %u || Leader: %d  || Network: %d ]\n",
-                id, leader_get_leader(), neighbours->length);
-#endif
 
         //Time synchronization IF I am the leader OR if I received my
         //timestamp from the leader
@@ -138,6 +131,8 @@ int main(void)
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
+        unsigned long delay = 1000000 * ((genrand_uint32()%10) + 1);
+        vtimer_usleep(delay);
     }
     return 0;
 }
