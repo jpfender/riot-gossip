@@ -7,7 +7,7 @@
 #include "hwtimer.h"
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 #define ENABLE_WARN (1)
@@ -22,7 +22,7 @@
 #define SECOND              (1000 * 1000)
 #define SENDING_DELAY       (10 * 1000)
 
-#define CLEANUP_THRESHOLD   (10)
+#define CLEANUP_THRESHOLD   (20)
 
 char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
 msg_t msg_q[RCV_BUFFER_SIZE];
@@ -45,6 +45,7 @@ void gossip_radio(void) {
     msg_init_queue(msg_q, RCV_BUFFER_SIZE);
 
     while (1) {
+        DEBUG("D: waiting for packet\n");
         msg_receive(&m);
         DEBUG("D: gossip_radio received something\n");
         if (m.type == PKT_PENDING) {
@@ -257,11 +258,13 @@ int gossip_handle_msg(radio_packet_t* p) {
     gossip_update_neighbour(p);
 
     // if packet is an ANNOUNCE Packet
-    if (strncmp(msg_text, ANNOUNCE, strlen(ANNOUNCE)) == 0)
+    if (strncmp(msg_text, ANNOUNCE, strlen(ANNOUNCE)) == 0){
+        DEBUG("D: [gossip] ANNOUNCE packet seen\n");
         return gossip_handle_announce(p);
-
+    }
     // if packet is an MSG Packet
-    if (strncmp(msg_text, MSG, strlen(MSG)) == 0) {
+    else if (strncmp(msg_text, MSG, strlen(MSG)) == 0) {
+        DEBUG("D: [gossip] MSG packet seen\n");
         // strip msg header and update length
         msg_text += strlen(MSG);
         cur_len -= strlen(MSG);
@@ -272,6 +275,9 @@ int gossip_handle_msg(radio_packet_t* p) {
             WARN("W: got msg from %i but handler was not set\n", p->src);
         }
         return 0;
+    }
+    else {
+        WARN("W: got unkonwn GOSSIP message from %i\n", p->src);
     }
 
     return 0;
