@@ -46,11 +46,12 @@ char leader_get_initialized(){
 }
 
 int leader_init(){
-    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
+    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 10];
     gossip_node_t* node;
 
     node = gossip_get_neighbour(RANDOM);
     while ( node && node->id == leader) {
+        DEBUG("D: random neighbour is: %d\n", node->id);
         node = gossip_get_neighbour(RANDOM);
     }
     if(!node){
@@ -64,11 +65,14 @@ int leader_init(){
     DEBUG("D: round: %i\n", election_round);
     sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
 
-    return gossip_send(node, msg_buffer, strlen(msg_buffer));
+    int r=gossip_send(node, msg_buffer, strlen(msg_buffer));
+    if( r )
+        DEBUG("D: send failed\n");
+    return r;
 }
 
 void leader_elect(){
-    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 100];
+    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + 10];
     gossip_node_t* node;
 
     for(int i=0;i<ROUNDS;i++){
@@ -126,6 +130,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
         DEBUG("D: discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, leader);
         node = gossip_find_node_by_id(src);
+        DEBUG("D: sending msg of size %d\n",strlen(msg_buffer));
         gossip_send(node, msg_buffer, strlen(msg_buffer));
     }
 #endif
@@ -148,6 +153,6 @@ int leader_handle_remove_neighbour(gossip_node_t* neighbour) {
         // idea.
         leader_init();
     }
-
-    return OK;
+    return 1;
 }
+
