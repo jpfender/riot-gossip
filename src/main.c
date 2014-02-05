@@ -28,7 +28,6 @@ char leader_stack[LEADER_STACK_SIZE];
 char blink_stack[BLINK_STACK_SIZE];
 
 void handle_msg(void* msg_text, size_t size, uint16_t src){
-    size_t i;
 
     /* MSG is for Leader Election */
     if (strncmp(msg_text, LE, strlen(LE)) == 0) {
@@ -49,7 +48,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
     else {
         WARN("W: Unknown message received.");
         // format string black hole ahead
-        DEBUG("D: %s", msg_text);
+        DEBUG("D: %s", (char*)msg_text);
     }
 }
 

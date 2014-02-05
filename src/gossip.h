@@ -49,7 +49,7 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type);
 // get a list of all known neighbours
 // returns node list on success
 // returns NULL in case of failure
-gossip_node_list_t* gossip_get_all_neighbours();
+gossip_node_list_t* gossip_get_all_neighbours(void);
 
 // free a node list returned by gossip_get_all_neighbours()
 // takes node list as paramter
@@ -70,6 +70,12 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy);
 // returns node on success
 // return NULL in case of failure
 gossip_node_t* gossip_get_neighbour_random(void);
+
+// choose oldest node
+// returns node on success
+// return NULL in case of failure
+gossip_node_t* gossip_get_neighbour_oldest_first(void);
+
 
 // send a message to some node
 // returns 0 on success

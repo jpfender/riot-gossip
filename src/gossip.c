@@ -310,7 +310,7 @@ void gossip_cleanup(void) {
                 list_remove_item(neighbours, cur);
             }
         } else {
-            DEBUG("D: will forget %i in %i seconds\n", node->id,
+            DEBUG("D: will forget %i in %lu seconds\n", node->id,
                 (CLEANUP_THRESHOLD - now.seconds + node->last_recv));
         }
         cur = list_get_next(cur);

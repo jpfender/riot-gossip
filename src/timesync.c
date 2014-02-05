@@ -200,7 +200,7 @@ int timesync_init() {
                     + strlen(SYNC)
                     + strlen(enc)
                     + 100];
-    sprintf(msg_buffer, "%s%s%s%s%05i$%s", PREAMBLE, MSG, TS, SYNC, gossip_id, enc);
+    sprintf(msg_buffer, "%s%s%s%s%05lu$%s", PREAMBLE, MSG, TS, SYNC, gossip_id, enc);
 
     free(ts_buffer);
     return gossip_send(node, msg_buffer, strlen(msg_buffer));
