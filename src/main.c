@@ -77,8 +77,7 @@ int main(void)
     vtimer_init();
     vtimer_now(&time);
     genrand_init( time.microseconds );
-    id = (uint16_t)genrand_uint32();
-    id = 23;
+    id = 1+((uint16_t)genrand_uint32())%254;
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("D: gossip_init(%d) failed\n", transceiver);
         return 1;
@@ -88,9 +87,8 @@ int main(void)
 
 
     DEBUG("D: Announcing.\n");
-    int r = gossip_announce();
-    if( 1 != r ){
-        DEBUG("D: gossip_announce() failed with %i\n", r);
+    if( ! gossip_announce() ){
+        DEBUG("D: gossip_announce() failed\n");
     }
 
 #if 0
