@@ -13,8 +13,9 @@
 #define ENABLE_WARN (1)
 #include "warn.h"
 
-#define SND_BUFFER_SIZE     (100)
-#define RCV_BUFFER_SIZE     (64)
+#define SND_BUFFER_SIZE (10)
+#define RCV_BUFFER_SIZE (32)
+
 #define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT)
 
 #define WAIT_TIME           (2)
@@ -94,11 +95,6 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     DEBUG("D: trying to set address %i\n", id);
     msg_send_receive(&mesg, &mesg, transceiver_pid);
 
-
-    gossip_id = id;
-
-    cc110x_print_config();
-
 #ifdef MODULE_CC110X_NG
     mesg.type = SWITCH_RX;
     DEBUG("D: Set transceiver to SWITCH_RX\n");
@@ -107,6 +103,7 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
         return 1;
 #endif
 
+    gossip_id = id;
     return 0;
 }
 
@@ -222,19 +219,9 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
     }
     p.data = gossip_message;
 
-    DEBUG("D: Set transceiver to SND_PKT\n");
     if( ! msg_send(&mesg, transceiver_pid, 1) )
         return 1;
-
-#ifdef MODULE_CC110X_NG
-    // immediately switch back to rx mode if on cc1100
-    mesg.type = SWITCH_RX;
-    DEBUG("D: Set transceiver to SWITCH_RX\n");
-
-    if( ! msg_send(&mesg, transceiver_pid, 1) )
-        return 1;
-#endif
-
+    hwtimer_wait(HWTIMER_TICKS(WAIT_TIME * SECOND));
     return 0;
 }
 
