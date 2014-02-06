@@ -1,8 +1,8 @@
 #define BLINK_DURATION  (100*1000)
 #define BLINK_PAUSE     (1000*1000)
-#define BLINK_STACK_SIZE MINIMUM_STACK_SIZE
+#define BLINK_STACK_SIZE KERNEL_CONF_STACKSIZE_PRINTF
 
-int blink_pid;
+uint16_t blink_pid;
 
 /* emulate a cron-like behaviour to fire at specific time
    this is a bit silly, since we could just use sleep(DELAY)

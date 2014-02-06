@@ -1,17 +1,17 @@
-#include "vtimer.h"
 #include "board.h"
-#include "thread.h"
+#include "vtimer.h"
 
 #include "blink.h"
 
 void blink(void) {
 
-    while(1) {
+    while(1){
         /* do the blink */
         LED_RED_ON;
-        vtimer_usleep(BLINK_DURATION);
+        vtimer_usleep( BLINK_DURATION );
         LED_RED_OFF;
 
-        thread_sleep();
+        /* pause fixed + offset time and call ourself back*/
+        vtimer_usleep( BLINK_PAUSE );
     }
 }

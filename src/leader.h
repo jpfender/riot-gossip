@@ -2,7 +2,7 @@
 
 #define LE "LEADER_ELECTION:"
 #define ROUNDS (3)
-#define LEADER_STACK_SIZE   MINIMUM_STACK_SIZE
+#define LEADER_STACK_SIZE   KERNEL_CONF_STACKSIZE_PRINTF
 
 
 char leader_get_active(void);

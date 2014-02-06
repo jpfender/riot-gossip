@@ -93,15 +93,8 @@ int main(void)
     }
     leader_set_leader(id);
 
-#if 0
     blink_pid = thread_create( blink_stack, BLINK_STACK_SIZE , PRIORITY_MAIN-2,
                             0, blink, "Blink");
-#endif
-
-    if( 0 > blink_pid ){
-        puts("E: blink thread creation failed.");
-        return 1;
-    }
 
     while (1) {
         gossip_announce();
@@ -126,8 +119,8 @@ int main(void)
 
         //Time synchronization IF I am the leader OR if I received my
         //timestamp from the leader
-        if (leader_get_leader() == gossip_id || timesync_get_trusted())
-            timesync_init();
+        //if (leader_get_leader() == id || timesync_get_trusted())
+        //    timesync_init();
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
