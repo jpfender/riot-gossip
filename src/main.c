@@ -12,6 +12,7 @@
 #include "msg.h"
 #include "random.h"
 #include "thread.h"
+#include "hwtimer.h"
 
 #include "gossip.h"
 #include "leader.h"
@@ -65,21 +66,21 @@ int main(void)
 {
     uint16_t id;
     timex_t time;
-    sht11_val_t sht11_val;
     transceiver_type_t transceiver = TRANSCEIVER_TYPE;
     gossip_node_list_t *neighbours;
 
     puts("\n\t\t\tWelcome to RIOT\n");
     puts("Initializing gossiping.");
-    DEBUG("D: Registering sample gossip message handler.");
+    DEBUG("D: Registering sample gossip message handler.\n");
     gossip_register_msg_handler(handle_msg);
 
-    DEBUG("D: Registering gossip on_remove_neighbour handler.");
+    DEBUG("D: Registering gossip on_remove_neighbour handler.\n");
     gossip_register_on_remove_neighbour_handler(handle_remove_neighbour);
 
-    vtimer_init();
+    //vtimer_init();
     vtimer_now(&time);
 #ifdef MODULE_SHT11
+    sht11_val_t sht11_val;
     sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
     genrand_init( time.microseconds ^ (long) sht11_val.temperature*1000 ^ (long) sht11_val.relhum*1000 );
 #else
