@@ -63,7 +63,7 @@ int leader_init(){
 
     DEBUG("D: initial leader: %d\n",leader);
     DEBUG("D: round: %i\n", election_round);
-    sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
+    sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, election_round, leader);
 
     int r=gossip_send(node, msg_buffer, strlen(msg_buffer));
     if( r )
@@ -76,7 +76,7 @@ void leader_elect(){
     gossip_node_t* node;
 
     for(int i=0;i<ROUNDS;i++){
-        sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
+        sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_get_neighbour(RANDOM);
         if(!node){
             WARN("W: no neighbours, election failed.\n");
@@ -119,7 +119,7 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     // got leader from an old round, inform sending node
     if(round < election_round) { // TODO: fix possible overflow
         DEBUG("D: got round %i (current is %i) informing sender\n",round,election_round);
-        sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, election_round, leader);
+        sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
         free(msg_buffer);
@@ -138,14 +138,14 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     // TODO: add custom metrics functions here instead of a<b
     if(received_leader <= leader ){
         DEBUG("D: discarding candidate and informing sender\n");
-        sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, leader);
+        sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, round, leader);
     }
 
     // update leader if we receive a better candidate
     if(received_leader > leader ){
         DEBUG("D: adding a new, better leader\n");
         leader_set_leader(received_leader);
-        sprintf(msg_buffer, "%s%s%s%03i%i", PREAMBLE, MSG, LE, round, MAX_UID);
+        sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, round, MAX_UID);
     }
 
     node = gossip_find_node_by_id(src);
