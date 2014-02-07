@@ -10,12 +10,14 @@
 #define TRANSCEIVER_TYPE TRANSCEIVER_NATIVE
 #define MAX_UID 1024
 #define UID_LEN 4
+#define UID_LEN_STR "4"
 #define PACKET_LENGTH 62
 #endif
 #ifdef MODULE_CC110X_NG
 #include "cc110x_ng.h"
 #define TRANSCEIVER_TYPE TRANSCEIVER_CC1100
 #define UID_LEN 3
+#define UID_LEN_STR "3"
 #endif
 
 #define OK      1

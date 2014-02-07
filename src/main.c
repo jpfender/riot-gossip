@@ -120,8 +120,8 @@ int main(void)
 
         //Time synchronization IF I am the leader OR if I received my
         //timestamp from the leader
-        //if (leader_get_leader() == id || timesync_get_trusted())
-        //    timesync_init();
+        if (leader_get_leader() == id || timesync_get_trusted())
+            timesync_init();
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
