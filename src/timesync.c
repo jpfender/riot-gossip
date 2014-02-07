@@ -80,6 +80,32 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
             t1_master = atoi(rcv_buffer + strlen(SYNC) + UID_LEN);
             DEBUG("D: Received T1_MASTER usec from %i: %ld\n", ts_src, t1_master);
 
+            DEBUG("D: Received T1_MASTER from %i: %i\n", ts_src, t1_master);
+
+            /* DEBUG("D: Received T1_MASTER timestamp from %i: %s\n", */
+            /*         ts_src, timesync_write_tm(ts_buffer, t1_master) ); */
+
+            // Get current time
+            /* struct tm ltime; */
+            /* rtc_get_localtime(&ltime); */
+            rtc_time(&tiv);
+
+            //Wrap localtime into packed wrapper
+            /* timesync_copy_ts(&ltime, &t1_local); */
+
+            /* DEBUG("D: Current T1_LOCAL timestamp: %s\n", timesync_write_tm(ts_buffer, &t1_local) ); */
+            DEBUG("D: Current T1_LOCAL: %i\n", t1_local);
+            
+            // Sleep for 2 seconds, then record T2_LOCAL and send
+            // DELAY_REQ
+            /* vtimer_usleep(1000*1000*2); */
+
+            /* rtc_get_localtime(&ltime); */
+
+            //Wrap localtime into packed wrapper
+            /* timesync_copy_ts(&ltime, &t2_local); */
+
+            /* DEBUG("D: Current T2_LOCAL timestamp: %s\n", timesync_write_tm(ts_buffer, &t2_local) ); */
 
             gossip_node_t* node = gossip_find_node_by_id(src);
             gossip_send(node, DELAY_REQ_BUFFER, strlen(DELAY_REQ_BUFFER));
