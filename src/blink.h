@@ -2,7 +2,7 @@
 #include <timesync.h>
 
 #define BLINK_DURATION  (100*1000)
-#define BLINK_PAUSE     (1000*1000)
+#define BLINK_PAUSE     (2000*1000)
 #define BLINK_STACK_SIZE KERNEL_CONF_STACKSIZE_PRINTF
 
 uint16_t blink_pid;

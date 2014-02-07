@@ -3,6 +3,9 @@
 
 #include "blink.h"
 
+#define ENABLE_DEBUG (1)
+#include "debug.h"
+
 void blink(void) {
 
     while(1){
@@ -18,7 +21,12 @@ void blink(void) {
         vtimer_usleep( (1000 * 1000) - tiv.tv_usec );
 
         int wait = timesync_get_master_offset();
-        if (wait)
-            vtimer_usleep(wait);
+        if (wait){
+            DEBUG("D: sleeping: %i + %i\n", BLINK_PAUSE, wait);
+            vtimer_usleep(wait + BLINK_PAUSE );
+        } else {
+            DEBUG("D: sleeping: %i\n", BLINK_PAUSE);
+            vtimer_usleep(BLINK_PAUSE);
+        }
     }
 }
