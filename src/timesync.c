@@ -3,7 +3,7 @@
 #include <leader.h>
 #include "vtimer.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 #define ENABLE_WARN (0)
@@ -89,7 +89,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
 
             t1_master = atoi(rcv_buffer + strlen(SYNC) + UID_LEN);
 
-            DEBUG("D: Received T1_MASTER usec from %i: %i\n", ts_src, rec_usec);
+            DEBUG("D: Received T1_MASTER from %i: %i\n", ts_src, t1_master);
 
             /* DEBUG("D: Received T1_MASTER timestamp from %i: %s\n", */
             /*         ts_src, timesync_write_tm(ts_buffer, t1_master) ); */
@@ -103,7 +103,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
             /* timesync_copy_ts(&ltime, &t1_local); */
 
             /* DEBUG("D: Current T1_LOCAL timestamp: %s\n", timesync_write_tm(ts_buffer, &t1_local) ); */
-            DEBUG("D: Current T1_LOCAL usec: %s\n", timesync_write_tm(ts_buffer, &t1_local) );
+            DEBUG("D: Current T1_LOCAL: %i\n", t1_local);
             
             // Sleep for 2 seconds, then record T2_LOCAL and send
             // DELAY_REQ
