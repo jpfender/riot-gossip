@@ -7,7 +7,7 @@ valgrind: CFLAGS += -g
 export PROJECT = riot-gossip
 export RIOTBASE = $(CURDIR)/../../RIOT
 export QUIET ?= 1
-export BOARD = msba2
+export BOARD ?= msba2
 
 USEMODULE += random
 USEMODULE += vtimer
