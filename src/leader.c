@@ -85,6 +85,8 @@ void leader_elect(){
         gossip_send(node, msg_buffer, strlen(msg_buffer));
         vtimer_usleep(1000*1000*2);
     }
+    if( leader_get_leader() == gossip_id )
+        timesync_set_trusted(1);
     leader_set_active(0);
 }
 
@@ -136,13 +138,13 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     }
 
     // TODO: add custom metrics functions here instead of a<b
-    if(received_leader <= leader ){
+    if(received_leader < leader ){
         DEBUG("D: discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, round, leader);
     }
 
     // update leader if we receive a better candidate
-    if(received_leader > leader ){
+    if(received_leader >= leader ){
         DEBUG("D: adding a new, better leader\n");
         leader_set_leader(received_leader);
         sprintf(msg_buffer, "%s%s%s%0" UID_LEN_STR "i%i", PREAMBLE, MSG, LE, round, MAX_UID);
