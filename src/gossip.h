@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "thread.h"
 #include "transceiver.h"
 #include "protocol.h"
 
@@ -8,7 +9,7 @@
 #endif
 #ifdef MODULE_NATIVENET
 #define TRANSCEIVER_TYPE TRANSCEIVER_NATIVE
-#define MAX_UID 1024
+#define MAX_UID 1023
 #define UID_LEN 4
 #define UID_LEN_STR "4"
 #define PACKET_LENGTH 62
@@ -20,6 +21,7 @@
 #define UID_LEN_STR "3"
 #endif
 
+#define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT*4)
 #define OK      1
 #define KEEP    0
 
@@ -40,6 +42,8 @@ typedef struct gossip_node_list {
     size_t length;
     gossip_node_t** nodes;
 } gossip_node_list_t;
+
+char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
 
 
 // send hello message to broadcast adress (sould be called on a regular basis)

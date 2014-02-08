@@ -1,5 +1,4 @@
 #include "gossip.h"
-#include <thread.h>
 #include "list.h"
 #include "random.h"
 #include <string.h>
@@ -16,7 +15,6 @@
 #define SND_BUFFER_SIZE (10)
 #define RCV_BUFFER_SIZE (32)
 
-#define RADIO_STACK_SIZE    (KERNEL_CONF_STACKSIZE_DEFAULT)
 
 #define WAIT_TIME           (2)
 #define SECOND              (1000 * 1000)
@@ -83,7 +81,7 @@ int gossip_init(uint16_t id, transceiver_type_t transceiver_type) {
     gossip_radio_pid = thread_create(gossip_radio_stack_buffer,
                                      RADIO_STACK_SIZE,
                                      PRIORITY_MAIN-2,
-                                     0,
+                                     CREATE_STACKTEST,
                                      gossip_radio,
                                      "gossip_radio");
     transceiver_register(transceiver_type, gossip_radio_pid);
@@ -222,7 +220,7 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len) {
 
     if( ! msg_send(&mesg, transceiver_pid, 1) )
         return 1;
-    hwtimer_wait(HWTIMER_TICKS(WAIT_TIME * SECOND));
+    hwtimer_wait(HWTIMER_TICKS(SENDING_DELAY));
     return 0;
 }
 
@@ -244,6 +242,7 @@ int gossip_handle_msg(radio_packet_t* p) {
     size_t cur_len = p->length;
     msg_text[cur_len] = '\0';
 
+    DEBUG("<- %s\n", msg_text);
     // check if it is a gossip packet
     if (strncmp(msg_text, PREAMBLE, strlen(PREAMBLE))){
         WARN("W: non-gossip packet received");
