@@ -9,17 +9,17 @@
 
 void blink(void) {
     struct timeval tiv;
-    int wait;
+    uint32_t wait;
 
     /* everyone needs to wait for microseconds=0 before starting to blink */
     rtc_time(&tiv);
-    vtimer_usleep( ( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR );
+    vtimer_usleep( (uint32_t)(( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR ));
     //hwtimer_spin( HWTIMER_TICKS( ( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR ) );
     printf("blink thread synced to zero\n");
 
     while(1){
-        rtc_time(&tiv);
-        printf("blink time usec: %i\n", (int) tiv.tv_usec);
+        //rtc_time(&tiv);
+        //printf("blink time usec: %lu\n", tiv.tv_usec);
         /* do the blink */
         LED_RED_ON;
         //hwtimer_spin( HWTIMER_TICKS( BLINK_DURATION ));
@@ -31,12 +31,12 @@ void blink(void) {
             /* be careful with debug output here, as it affects delay as well! */
             //rtc_time(&tiv);
             //printf("(pseudo) adjusting clock from %i\n", (int) tiv.tv_usec);
-            //hwtimer_spin( HWTIMER_TICKS( (wait+PROC_DELAY) * VTIMER_FACTOR ));
-            vtimer_usleep( (wait+PROC_DELAY) * VTIMER_FACTOR );
+            vtimer_usleep( (uint32_t)((wait+PROC_DELAY) * VTIMER_FACTOR) );
+            printf("D: waited %lu us.\n", (uint32_t)((wait+PROC_DELAY) * VTIMER_FACTOR));
             timesync_set_synced(1);
             //rtc_time(&tiv);
             //printf("(pseudo) adjusting clock to %i\n", (int)tiv.tv_usec);
         }
-        vtimer_usleep( BLINK_PAUSE );
+        vtimer_usleep( BLINK_PAUSE-BLINK_DURATION);
     }
 }

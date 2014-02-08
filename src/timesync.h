@@ -17,13 +17,14 @@
 /* magic ahead */
 /* it may be that vtimer_usleep() has a non linear error of  O(n) */
 #define VTIMER_FACTOR 0.947
+//#define VTIMER_FACTOR 1.0
 
 
 void timesync_set_synced(char value);
 char timesync_get_synced(void);
 void timesync_set_trusted(int value);
 int timesync_get_trusted(void);
-int timesync_get_master_offset(void);
+uint32_t timesync_get_master_offset(void);
 void timesync_handle_msg(void*, size_t, uint16_t);
 int timesync_init(void);
 void timesync_set_trusted(int);

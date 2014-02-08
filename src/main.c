@@ -36,7 +36,7 @@ void handle_msg(void* msg_text, size_t size, uint16_t src){
     if (strncmp(msg_text, LE, strlen(LE)) == 0) {
         DEBUG("D: received a leader election msg\n");
         if( ! leader_get_active() ){
-            if( 0 > thread_create( leader_stack, LEADER_STACK_SIZE, PRIORITY_MAIN-3,
+            if( 0 > thread_create( leader_stack, LEADER_STACK_SIZE, 0,
                             CREATE_STACKTEST, leader_elect, "Leader") ){
                 puts("E: leader thread creation failed");
                 return;
@@ -98,6 +98,9 @@ int main(void)
                             CREATE_STACKTEST, blink, "Blink");
 
     while (1) {
+        unsigned long delay = 2000000 * ((genrand_uint32()%10) + 1);
+        vtimer_usleep(delay);
+
         gossip_announce();
         neighbours = gossip_get_all_neighbours();
 
@@ -126,15 +129,13 @@ int main(void)
         //Time synchronization IF I am the leader OR if I received my
         //timestamp from the leader
         //  XXX: only master initiates for now... change && to || in the future
-        if ( leader_get_leader() == id && timesync_get_trusted() ){
-            printf("Starting timesync..\n");
+        if ( leader_get_leader() == id && timesync_get_trusted() && ! leader_get_active() ){
+            printf("Starting timesync.\n");
             timesync_init();
         }
 
         gossip_cleanup();
         gossip_free_node_list(neighbours);
-        unsigned long delay = 2000000 * ((genrand_uint32()%10) + 1);
-        vtimer_usleep(delay);
     }
     return 0;
 }

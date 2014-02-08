@@ -15,16 +15,14 @@
 
 #define ABS(X) (X>0?X:-X)
 
-int t1_master,t2_master,rtt_master;
-int t1_local,t2_local,rtt_local;
-int tt;
-int master_offset = 0;
+uint32_t t1_master,t2_master,rtt_master;
+uint32_t t1_local,t2_local,rtt_local;
+uint32_t tt;
+uint32_t master_offset=0;
 int precision;
 int trusted = 0;
 
 int synced=0;
-
-struct timeval tiv;
 
 void timesync_set_trusted(int value) {
     trusted = value;
@@ -34,7 +32,7 @@ int timesync_get_trusted() {
     return trusted;
 }
 
-int timesync_get_master_offset() {
+uint32_t timesync_get_master_offset() {
     return master_offset;
 }
 
@@ -53,6 +51,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
     char ts_src_id[UID_LEN+1];
     char *msg_buffer;
     int new_precision;
+    struct timeval tiv;
 
     rtc_time(&tiv);
 
@@ -67,7 +66,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
             return;
         }
         t1_local = tiv.tv_usec;
-        DEBUG("SYNC usec: %i\n", (int)tiv.tv_usec );
+        DEBUG("SYNC usec: %lu\n", tiv.tv_usec );
 
         // Extract source ID of timestamp
         strncpy(ts_src_id, rcv_buffer + strlen(SYNC), UID_LEN);
@@ -79,7 +78,7 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
         if (ts_src == leader_get_leader()) {
 
             t1_master = atoi(rcv_buffer + strlen(SYNC) + UID_LEN);
-            DEBUG("D: Received T1_MASTER usec from %i: %i\n", ts_src, t1_master);
+            DEBUG("D: Received T1_MASTER usec from %i: %ld\n", ts_src, t1_master);
 
 
             gossip_node_t* node = gossip_find_node_by_id(src);
@@ -89,13 +88,13 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     } else if (!strncmp(rcv_buffer, DELAYREQ, strlen(DELAYREQ))) {
 
-        DEBUG("DELAYREQ usec: %i\n", (int)tiv.tv_usec );
+        DEBUG("DELAYREQ usec: %lu\n", tiv.tv_usec );
 
         msg_buffer = malloc(strlen(PREAMBLE) + strlen(MSG) + strlen(TS) + strlen(DELAYRESP) + 8);
         if(!msg_buffer)
             printf("E: malloc failed.\n");
 
-        sprintf(msg_buffer, "%s%s%s%s%08i", PREAMBLE, MSG, TS, DELAYRESP, (int)tiv.tv_usec);
+        sprintf(msg_buffer, "%s%s%s%s%08lu", PREAMBLE, MSG, TS, DELAYRESP, tiv.tv_usec);
 
         gossip_node_t* node = gossip_find_node_by_id(src);
         gossip_send(node, msg_buffer, strlen(msg_buffer));
@@ -117,10 +116,10 @@ void timesync_handle_msg(void* msg_text, size_t size, uint16_t src){
         tt = (rtt_local + rtt_master)/2/2;
         master_offset = (t1_local > tt ? t1_local - tt : (1000*1000) + t1_local - tt);
 
-        DEBUG("DELAYRESP usec: %i\n", (int)tiv.tv_usec );
-        DEBUG("Received T2_MASTER timestamp: %i\n", (int) t2_master);
-        DEBUG("our RTT: %i , master RTT: %i\n", rtt_local, rtt_master);
-        DEBUG("estimated master offset: %i\n", master_offset);
+        DEBUG("DELAYRESP usec: %lu\n", tiv.tv_usec );
+        DEBUG("Received T2_MASTER timestamp: %lu\n", t2_master);
+        DEBUG("our RTT: %lu , master RTT: %lu\n", rtt_local, rtt_master);
+        DEBUG("estimated master offset: %lu\n", master_offset);
 
         new_precision = ABS( (t1_local - t2_local ) - (t2_master - t1_master) );
         if( new_precision < precision ){
@@ -150,19 +149,19 @@ int timesync_init() {
         return 1;
     }
 
+
+    sprintf(msg_buffer, "%s%s%s%s%0" UID_LEN_STR "i%08lu", PREAMBLE, MSG, TS, SYNC, (int) gossip_id,
+            master_offset);
+
     /* timesync init and blink loop need to be synced locally, wait for usec=0 */
     rtc_time(&tiv);
-    vtimer_usleep( ( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR );
-    //hwtimer_spin( HWTIMER_TICKS( ( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR ) );
-
-    sprintf(msg_buffer, "%s%s%s%s%0" UID_LEN_STR "i%08i", PREAMBLE, MSG, TS, SYNC, (int) gossip_id,
-            master_offset);
+    vtimer_usleep( (uint32_t)(( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR ));
 
     gossip_send(node, msg_buffer, strlen(msg_buffer));
     free(msg_buffer);
 
     rtc_time(&tiv);
-    DEBUG("Current usec: %i\n", (int)tiv.tv_usec );
+    DEBUG("Current usec: %lu\n", tiv.tv_usec );
     printf("time sync init synced zero\n");
     return 0;
 }
