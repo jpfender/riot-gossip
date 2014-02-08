@@ -15,3 +15,4 @@ int leader_init(void);
 void leader_elect(void);
 void leader_handle_msg(void*,size_t,uint16_t);
 int leader_handle_remove_neighbour(gossip_node_t*);
+char leader_is_leader(void);

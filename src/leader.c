@@ -7,6 +7,8 @@
 #include "leader.h"
 #include "vtimer.h"
 
+#include "timesync.h"
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -36,6 +38,10 @@ void leader_set_leader(uint16_t new_leader){
 
 uint16_t leader_get_leader(){
     return leader;
+}
+
+char leader_is_leader(){
+    return ( leader_get_leader() == gossip_id );
 }
 
 void leader_set_initialized(char v){

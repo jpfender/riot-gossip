@@ -1,9 +1,11 @@
 #include <rtc.h>
 #include <timesync.h>
 
-#define BLINK_DURATION  (100*1000)
-#define BLINK_PAUSE     (2000*1000)
+#define BLINK_DURATION  (100*1000)*VTIMER_FACTOR
+#define BLINK_PAUSE     (2000*1000)*VTIMER_FACTOR
 #define BLINK_STACK_SIZE KERNEL_CONF_STACKSIZE_PRINTF
+
+#define PROC_DELAY      (0) // might be useful for empirical delay
 
 uint16_t blink_pid;
 
