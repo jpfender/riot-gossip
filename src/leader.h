@@ -1,9 +1,11 @@
 #include <stdint.h>
 
 #define LE "LEADER_ELECTION:"
-#define ROUNDS (3)
-#define LEADER_STACK_SIZE   KERNEL_CONF_STACKSIZE_PRINTF * 2
+#define ROUNDS (2)
+#define LEADER_STACK_SIZE   KERNEL_CONF_STACKSIZE_PRINTF
 
+#define ROUND_LEN 3
+#define ROUND_LEN_STR "3"
 
 char leader_get_active(void);
 void leader_set_active(char value);
