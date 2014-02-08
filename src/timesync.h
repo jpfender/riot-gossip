@@ -19,8 +19,8 @@
 #define VTIMER_FACTOR 0.947
 
 
-void timesync_set_synced(int value);
-int timesync_get_synced(void);
+void timesync_set_synced(char value);
+char timesync_get_synced(void);
 void timesync_set_trusted(int value);
 int timesync_get_trusted(void);
 int timesync_get_master_offset(void);

@@ -22,6 +22,8 @@ int master_offset = 0;
 int precision;
 int trusted = 0;
 
+int synced=0;
+
 struct timeval tiv;
 
 void timesync_set_trusted(int value) {
@@ -34,6 +36,13 @@ int timesync_get_trusted() {
 
 int timesync_get_master_offset() {
     return master_offset;
+}
+
+void timesync_set_synced(char value){
+    synced=value;
+}
+char timesync_get_synced(){
+    return synced;
 }
 
 
