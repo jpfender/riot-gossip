@@ -8,15 +8,15 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="962.72357"
-   height="555"
-   viewBox="0 0 770.17886 444"
+   width="960.64795"
+   height="539.95697"
+   viewBox="0 0 768.51836 431.96558"
    version="1.1"
    id="svg3383"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="timesync.svg"
    style="enable-background:new"
-   inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync.png"
+   inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
    inkscape:export-xdpi="95.809998"
    inkscape:export-ydpi="95.809998">
   <metadata
@@ -44,13 +44,13 @@
      inkscape:window-height="729"
      id="namedview3720"
      showgrid="false"
-     inkscape:zoom="0.45254834"
-     inkscape:cx="481.82959"
-     inkscape:cy="179.99238"
+     inkscape:zoom="0.64"
+     inkscape:cx="693.81493"
+     inkscape:cy="201.0631"
      inkscape:window-x="0"
      inkscape:window-y="18"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer6"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -424,16 +424,16 @@
   <text
      xml:space="preserve"
      style="font-size:25.60000038px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Ubuntu Mono;-inkscape-font-specification:Ubuntu Mono"
-     x="227.6723"
-     y="478.79449"
+     x="226.0118"
+     y="459.52179"
      id="text4775"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan4777"
-       x="227.6723"
-       y="478.79449"></tspan></text>
+       x="226.0118"
+       y="459.52179"></tspan></text>
   <g
-     transform="translate(169.09255,246.82836)"
+     transform="translate(167.43204,227.55565)"
      id="g4779"
      style="fill:#000000;fill-opacity:1">
     <g
@@ -456,12 +456,12 @@
      id="layer2"
      inkscape:label="Slide1"
      style="display:inline;filter:url(#filter7163)"
-     transform="translate(0.59800721,11.960206)">
+     transform="translate(-1.0625,-7.3125007)">
     <g
        id="g3508"
        style="fill:#000000;fill-opacity:1"
        transform="translate(57.408989,0)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -518,7 +518,7 @@
        id="g3524"
        style="fill:#000000;fill-opacity:1"
        transform="translate(57.40899,0)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -568,7 +568,7 @@
        id="g3538"
        style="fill:#000000;fill-opacity:1"
        transform="translate(54.836639,0)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -619,7 +619,7 @@
        id="path3496"
        d="m 1.0493437,32.092303 633.7705663,0"
        style="fill:none;stroke:#000000;stroke-width:2.0986867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -627,13 +627,13 @@
        id="path3498"
        d="m 640.37731,32.04296 -10,5 2.5,-5 -2.5,-5 z"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <g
        id="g3578"
        style="fill:#000000;fill-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -663,13 +663,13 @@
        id="path3586"
        d="m 113.42773,47.054389 -0.0508,-30.73828"
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <g
        id="g3588"
        style="fill:#000000;fill-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -713,7 +713,7 @@
        id="path3600"
        d="m 335.7461,45.574389 -0.38282,-29.53906"
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -721,14 +721,14 @@
        id="path3602"
        d="m 559.33692,46.420103 -0.148,-29.3242"
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <g
        id="g3552"
        style="fill:#000000;fill-opacity:1;display:inline"
        transform="translate(56.032659,0)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -786,7 +786,7 @@
        id="path3488"
        d="m 1.6483162,72.19532 632.2027538,0"
        style="fill:none;stroke:#000000;stroke-width:2.09350848;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -794,7 +794,7 @@
        id="path3490"
        d="m 640.97497,72.19532 -10,5 2.5,-5 -2.5,-5 z"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -802,7 +802,7 @@
        id="path3500"
        d="m 1.460399,412.71876 634.313971,0"
        style="fill:none;stroke:#000000;stroke-width:2.10048604;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -810,7 +810,7 @@
        id="path3504"
        d="m 1.4458898,370.93807 632.6281202,0"
        style="fill:none;stroke:#000000;stroke-width:2.09490347;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -818,7 +818,7 @@
        id="path3506"
        d="m 642.46718,370.89062 -10,5 2.5,-5 -2.5,-5 z"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -826,7 +826,7 @@
        id="path3502"
        d="m 642.4789,412.71876 -10,5 2.5,-5 -2.5,-5 z"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -834,13 +834,13 @@
        id="path3618"
        d="m 447.73438,428.53447 0.008,-30.16796"
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <g
        id="g3666"
        style="fill:#000000;fill-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -883,7 +883,7 @@
        id="g3568"
        style="fill:#000000;fill-opacity:1"
        transform="translate(-47.36,-0.84571429)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998">
       <use
@@ -913,7 +913,7 @@
        id="path3576"
        d="m 3.880164,426.31856 0.043,-29.74608"
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <path
@@ -921,7 +921,7 @@
        d="m 224.71351,429.22628 0.008,-30.16796"
        id="path7173"
        inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998" />
     <flowRoot
@@ -929,7 +929,7 @@
        id="flowRoot7176"
        style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Cantarell;-inkscape-font-specification:Cantarell"
        transform="scale(0.8,0.8)"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998"><flowRegion
          id="flowRegion7178"><rect
@@ -945,7 +945,7 @@
        y="435.91806"
        id="text7184"
        sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998"><tspan
          sodipodi:role="line"
@@ -960,7 +960,7 @@
        y="19.459734"
        id="text7308"
        sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-2.png"
+       inkscape:export-filename="/home/mk/src/riot-gossip/assets/timesync-4.png"
        inkscape:export-xdpi="95.809998"
        inkscape:export-ydpi="95.809998"><tspan
          sodipodi:role="line"
@@ -974,7 +974,7 @@
      id="layer4"
      inkscape:label="Slide2"
      style="display:inline;filter:url(#filter7669)"
-     transform="translate(0.59800721,11.960206)">
+     transform="translate(-1.0625,-7.3125007)">
     <path
        inkscape:connector-curvature="0"
        id="path3616"
@@ -1252,7 +1252,7 @@
      id="layer6"
      inkscape:label="Slide3"
      style="display:inline"
-     transform="translate(0.59800721,11.960206)">
+     transform="translate(-1.0625,-7.3125007)">
     <text
        transform="matrix(0.26355017,0.96464568,-0.96464568,0.26355017,0,0)"
        sodipodi:linespacing="125%"
@@ -1418,7 +1418,7 @@
      id="layer7"
      inkscape:label="Slide4"
      style="display:inline;filter:url(#filter7371)"
-     transform="translate(1.6605072,18.853999)">
+     transform="translate(0,-0.41870774)">
     <text
        sodipodi:linespacing="125%"
        id="text7304"
