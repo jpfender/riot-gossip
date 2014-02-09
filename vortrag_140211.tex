@@ -118,6 +118,7 @@ Mobilkommunikation}
     \end{itemize}
 }
 
+
 \begin{frame}[fragile]
   \frametitle{Leader election -- example}
   \begin{center}
@@ -138,10 +139,41 @@ Mobilkommunikation}
   \end{center}
 \end{frame}
 
+\frame{
+    \huge{new Build Target} \\
+    \Large{moving from x86 to arm}
+}
+
+\begin{frame}[fragile]
+    \frametitle{new Build Target}
+    What we expected:
+    \vspace{30pt}
+    \lstset{basicstyle=\LARGE\ttfamily}
+    \begin{lstlisting}
+    -export BOARD = native
+    +export BOARD = msba2
+    \end{lstlisting}
+\end{frame}
+
+
+\frame{
+    \frametitle{new Build Target}
+    \normalsize
+    What we got:
+    \begin{itemize}
+        \item avsextrem boards: RIOT does not build at all
+        \item msba2 boards: immediate segfaults (ARM speak: data abort)
+        \item stack sizes of threads way too small
+        \item suddenly: packet loss (radio, duh)
+        \item random is not that random anymore
+        \item wrong antennas (not 2.4GHz)
+        \item meanwhile: native port fails due to vtimer bug (fixed 2 weeks ago)
+        \item hwtimer granularity 1 second(!)
+    \end{itemize}
+}
 
 \frame{
   \huge{Time synchronization}
-
 }
 
 \frame{
@@ -151,14 +183,8 @@ Mobilkommunikation}
         timestamp from the leader (directly or indirectly), it may
         initiate time synchronization
       \item Current timestamp is gossiped to a random neighbor
-      \item Upon reception of a timestamp, a node records the time of
-        reception and replies with a \lstinline!DELAYREQ! message
-      \item Upon reception of a \lstinline!DELAYREQ!, the master once
-        again records the current time and sends it back with
-        a \lstinline!DELAYRESP! message
-      \item Upon reception of a \lstinline!DELAYRESP!, a node records
-        the time of reception
-      \item Using these four timestamps, the node can calculate its
+      \item Start ping-pong to get a transmission delay
+      \item Using these timestamps, the node can calculate its
         offset to the master and adjust its own clock accordingly
     \end{itemize}
 }
@@ -189,56 +215,6 @@ Mobilkommunikation}
 }
 
 
-\begin{frame}[fragile]
-  \frametitle{Time synchronization -- Code snippet}
-  \begin{lstlisting}
-    // If message comes from the leader (directly or indirectly),
-    // record master and local timestamps and initiate ping-pong
-    if (ts_src == leader_get_leader()) {
-
-        t1_master = atoi(rcv_buffer + strlen(SYNC) + UID_LEN);
-        // Get current time
-        rtc_time(&tiv);
-        gossip_send(node, DELAY_REQ_BUFFER, strlen(DELAY_REQ_BUFFER));
-        t1_local = tiv.tv_usec;
-
-    } else if (!strncmp(rcv_buffer, DELAYREQ, strlen(DELAYREQ))) {
-
-        rtc_time(&tiv);
-        sprintf(msg_buffer, "%s%s%s%s%08i", PREAMBLE, MSG, TS, DELAYRESP, tiv.tv_usec);
-        gossip_send(node, msg_buffer, strlen(msg_buffer));
-
-    } else if (!strncmp(rcv_buffer, DELAYRESP, strlen(DELAYRESP))) {
-
-        rtc_time(&tiv);
-        t2_local = tiv.tv_usec;
-        t2_master = atoi(rcv_buffer + strlen(DELAYRESP));
-        // Calculate offset
-        offset = (t2_local > t1_local ? t2_local - t1_local : (1000000 - t1_local) + t2_local) / 2;
-        master_offset = t1_local - offset > 0 ? t1_local - offset : 1000000 - t1_local;
-        // Indicate that we have a trusted timestamp
-        timesync_set_trusted(1);
-    }
-  \end{lstlisting}
-\end{frame}
-
-\frame{
-  \huge{Issues}
-}
-
-\frame{
-  \frametitle{Issues}
-  \begin{itemize}
-    \item RIOT is still work in progress
-    \item We encountered several bugs, some of which were not previously
-      known to the RIOT team
-    \item Examples: Race conditions in hwtimer and vtimer, native
-      implementation not float safe
-    \item We communicated with the RIOT team during the project and
-      contributed to issues
-  \end{itemize}
-}
-
 \frame{
   \huge{Demo}
 }
@@ -254,12 +230,19 @@ Mobilkommunikation}
 }
 
 \frame{
-  \huge{Integration into RIOT}
+  \huge{Future Work}
 }
 
 \frame{
-  \frametitle{Integration into RIOT}
+  \frametitle{Future Work}
   \begin{itemize}
+    \item RIOT is still work in progress
+    \item We encountered several bugs, some of which were not previously
+      known to the RIOT team
+    \item Examples: Race conditions in hwtimer and vtimer, native
+      implementation not float safe
+    \item We communicated with the RIOT team during the project and
+      contributed to issues
     \item The RIOT team has signaled that we can expect our code to be
       merged into the RIOT-OS/projects repository
     \item Just needs some cleanup and documentation
