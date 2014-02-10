@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #define LE "LEADER_ELECTION:"
-#define ROUNDS (2)
+#define ROUNDS (4)
 #define LEADER_STACK_SIZE   KERNEL_CONF_STACKSIZE_PRINTF
 
 #define ROUND_LEN 3
