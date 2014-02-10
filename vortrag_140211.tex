@@ -140,39 +140,6 @@ Mobilkommunikation}
 \end{frame}
 
 \frame{
-    \huge{new Build Target} \\
-    \Large{moving from x86 to arm}
-}
-
-\begin{frame}[fragile]
-    \frametitle{new Build Target}
-    What we expected:
-    \vspace{30pt}
-    \lstset{basicstyle=\LARGE\ttfamily}
-    \begin{lstlisting}
-    -export BOARD = native
-    +export BOARD = msba2
-    \end{lstlisting}
-\end{frame}
-
-
-\frame{
-    \frametitle{new Build Target}
-    \normalsize
-    What we got:
-    \begin{itemize}
-        \item avsextrem boards: RIOT does not build at all
-        \item msba2 boards: immediate segfaults (ARM speak: data abort)
-        \item stack sizes of threads way too small
-        \item suddenly: packet loss (radio, duh)
-        \item random is not that random anymore
-        \item wrong antennas (not 2.4GHz)
-        \item meanwhile: native port fails due to vtimer bug (fixed 2 weeks ago)
-        \item hwtimer granularity 1 second(!)
-    \end{itemize}
-}
-
-\frame{
   \huge{Time synchronization}
 }
 
@@ -189,31 +156,49 @@ Mobilkommunikation}
     \end{itemize}
 }
 
+\begin{frame}[fragile]
+  \frametitle{Time synchronization}
+  \begin{center}
+    \includegraphics<1>[scale=0.35]{assets/timesync-1.png}
+    \includegraphics<2>[scale=0.35]{assets/timesync-2.png}
+    \includegraphics<3>[scale=0.35]{assets/timesync-3.png}
+    \includegraphics<4>[scale=0.35]{assets/timesync-4.png}
+  \end{center}
+\end{frame}
+
 \frame{
-    \frametitle{Time synchronization}
-    \begin{center}
-        \includegraphics[scale=0.35]{assets/timesync-1.png}
-    \end{center}
-}
-\frame{
-    \frametitle{Time synchronization}
-    \begin{center}
-        \includegraphics[scale=0.35]{assets/timesync-2.png}
-    \end{center}
-}
-\frame{
-    \frametitle{Time synchronization}
-    \begin{center}
-        \includegraphics[scale=0.35]{assets/timesync-3.png}
-    \end{center}
-}
-\frame{
-    \frametitle{Time synchronization}
-    \begin{center}
-        \includegraphics[scale=0.35]{assets/timesync-4.png}
-    \end{center}
+    \huge{New Build Target} \\
+    \Large{Moving from x86 to ARM}
 }
 
+\begin{frame}[fragile]
+    \frametitle{New Build Target}
+    What we expected:
+    \vspace{30pt}
+    \lstset{language=bash}
+    \lstset{basicstyle=\LARGE\ttfamily}
+    \begin{lstlisting}
+    -export BOARD = native
+    +export BOARD = msba2
+    \end{lstlisting}
+\end{frame}
+
+
+\frame{
+    \frametitle{New Build Target}
+    \normalsize
+    What we got:
+    \begin{itemize}
+        \item AVS-Extrem boards: RIOT does not build at all
+        \item MSB-A2 boards: Immediate segfaults (``data abort``)
+        \item Stack sizes of threads way too small
+        \item Suddenly: Packet loss (radio, duh)
+        \item Insufficiently random numbers
+        \item Wrong antennas (not 2.4GHz)
+        \item Meanwhile: Native port fails due to vtimer bug (fixed 2 weeks ago)
+        \item hwtimer granularity 1 second(!)
+    \end{itemize}
+}
 
 \frame{
   \huge{Demo}
@@ -245,7 +230,7 @@ Mobilkommunikation}
       contributed to issues
     \item The RIOT team has signaled that we can expect our code to be
       merged into the RIOT-OS/projects repository
-    \item Just needs some cleanup and documentation
+    \item TODO: cleanup and documentation
   \end{itemize}
 }
 
