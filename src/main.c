@@ -82,12 +82,13 @@ int main(void)
 #ifdef MODULE_SHT11
     sht11_val_t sht11_val;
     sht11_read_sensor(&sht11_val, HUMIDITY | TEMPERATURE);
-    genrand_init( time.microseconds ^ (long) sht11_val.temperature*1000 ^ (long) sht11_val.relhum*1000 );
+    genrand_init( time.microseconds ^ (long)(sht11_val.temperature*1000)^ (long)(sht11_val.relhum*1000) );
 #else
     genrand_init( time.microseconds );
 #endif
 
     id = 1+((uint16_t)genrand_uint32())%(MAX_UID-1);
+    printf("ID= %d\n", id);
     if( 0 != gossip_init(id,transceiver) ){
         DEBUG("D: gossip_init(%d) failed\n", transceiver);
         return 1;
