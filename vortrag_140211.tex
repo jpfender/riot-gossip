@@ -140,33 +140,6 @@ Mobilkommunikation}
 \end{frame}
 
 \frame{
-  \huge{Time synchronization}
-}
-
-\frame{
-    \frametitle{Time synchronization}
-    \begin{itemize}
-      \item If a node is the current leader or has received its
-        timestamp from the leader (directly or indirectly), it may
-        initiate time synchronization
-      \item Current timestamp is gossiped to a random neighbor
-      \item Start ping-pong to get a transmission delay
-      \item Using these timestamps, the node can calculate its
-        offset to the master and adjust its own clock accordingly
-    \end{itemize}
-}
-
-\begin{frame}[fragile]
-  \frametitle{Time synchronization}
-  \begin{center}
-    \includegraphics<1>[scale=0.35]{assets/timesync-1.png}
-    \includegraphics<2>[scale=0.35]{assets/timesync-2.png}
-    \includegraphics<3>[scale=0.35]{assets/timesync-3.png}
-    \includegraphics<4>[scale=0.35]{assets/timesync-4.png}
-  \end{center}
-\end{frame}
-
-\frame{
     \huge{New Build Target} \\
     \Large{Moving from x86 to ARM}
 }
@@ -199,6 +172,33 @@ Mobilkommunikation}
         \item hwtimer granularity 1 second(!)
     \end{itemize}
 }
+
+\frame{
+  \huge{Time synchronization}
+}
+
+\frame{
+    \frametitle{Time synchronization}
+    \begin{itemize}
+      \item If a node is the current leader or has received its
+        timestamp from the leader (directly or indirectly), it may
+        initiate time synchronization
+      \item Current timestamp is gossiped to a random neighbor
+      \item Start ping-pong to get a transmission delay
+      \item Using these timestamps, the node can calculate its
+        offset to the master and adjust its own clock accordingly
+    \end{itemize}
+}
+
+\begin{frame}[fragile]
+  \frametitle{Time synchronization}
+  \begin{center}
+    \includegraphics<1>[scale=0.35]{assets/timesync-1.png}
+    \includegraphics<2>[scale=0.35]{assets/timesync-2.png}
+    \includegraphics<3>[scale=0.35]{assets/timesync-3.png}
+    \includegraphics<4>[scale=0.35]{assets/timesync-4.png}
+  \end{center}
+\end{frame}
 
 \frame{
   \huge{Demo}
