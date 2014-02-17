@@ -1,0 +1,321 @@
+\documentclass[11pt,
+  a4paper,
+  ngerman,
+  BCOR=7mm
+]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{tocbasic}
+\usepackage[headsepline]{scrpage2}
+\usepackage[german]{fancyref}
+\usepackage{xcolor}
+\usepackage[hyphens]{url}
+\usepackage{listings}
+\usepackage[pdftex]{graphicx}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{dsfont}
+\usepackage[colorlinks=false, linktocpage]{hyperref}
+\setlength\parindent{0pt} 
+
+\usepackage{DejaVuSansMono}
+\lstset{language=C}
+\lstset{basicstyle=\footnotesize\ttfamily}
+\lstset{breaklines=true}
+\lstset{keywordstyle=\color{purple}}
+\lstset{showstringspaces=false}
+
+\usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows}
+
+\newdimen\XCoord
+\newdimen\YCoord
+
+\newcommand*{\ExtractCoordinate}[1]{\path (#1); \pgfgetlastxy{\XCoord}{\YCoord};}%
+
+\usepackage{url}
+
+\author{Michael Krause (), Robin Nehls (), Jakob Pfender (4282720)}
+\title{Softwareprojekt Mobilkommunikation:\\Gossiping on Mobile
+Devices\\Final Project Report}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\section*{Overview and Motivation}
+\label{sec:overview_motivation}
+Our task was to implement gossiping for RIOT on an application level,
+such that it could ideally be used as a platform for any number of
+applications that can benefit from information dissemination via
+gossiping. Therefore, our overarching goal was to implement the
+gossiping architecture in as modular a way as possible so that arbitrary
+``plug-in`` applications could use it to share their information among
+participating nodes. This approach would also enable us to hand over the
+completed code to the RIOT project after the software project ended in
+order to provide them with a generic gossiping platform upon which
+further applications can be built. In the following report, we will
+examine our work on this project and assess whether all of our goals
+have been met.
+
+\section*{Three Phases}
+\label{sec:three_phases}
+As a way of structuring our development, we decided to divide our
+project into three distinct phases, with each phase building on the
+previous one. This allowed us to formulate clear milestones and also
+resulted in our project being essentially composed of several smaller
+chunks, which made distribution of the workload more manageable.
+
+The three phases were:
+
+\begin{itemize}
+  \item \textbf{Phase 1}: Gossiping
+  \item \textbf{Phase 2}: Leader Election
+  \item \textbf{Phase 3}: Time Synchronization
+\end{itemize}
+
+We further divided these phases into concrete milestones.
+
+\newpage
+
+\section*{Gossiping}
+\label{sec:gossiping}
+In formulating our restraints for what constitutes a gossip protocol, we
+used the Wikipedia
+article\footnote{\url{https://en.wikipedia.org/wiki/Gossip_protocol}}
+as an orientation. Thus, we define a gossip protocol as one that
+satisifies the following conditions:
+
+\begin{itemize}
+  \item The core of the protocol involves periodic, pairwise
+    interactions
+  \item The information exchanged during these interactions is of
+    bounded size
+  \item When nodes interact, the state of at least one node changes to
+    reflect the state of the other
+  \item Reliable communication is not assumed
+  \item The frequency of the interactions is low compared to typical
+    message latencies so that the protocol costs are negligible
+  \item There is some form of randomness in the peer selection. Peers
+    might be selected from the full set of nodes or from a smaller set
+    of neighbours
+\end{itemize}
+
+\subsection*{Protocol description}
+\label{sub:protocol_gossiping}
+
+\subsubsection*{Neighbour management}
+\label{ssub:Neighbour_management}
+In order to be able to gossip to random neighbours, nodes need to
+maintain a list of these neighbours. Thus, nodes need to announce
+themselves in a broadcast fashion so that other nodes can notice them.
+Because we are dealing with non-static networks, nodes will also have to
+periodically re-announce themselves and also need to remove nodes they
+haven't heard from in a while from their neighbour tables.
+
+\subsubsection*{Information exchange}
+\label{ssub:Information_exchange}
+Nodes periodically choose a random neighbour to gossip to. Most of the
+specifics of this should be left to the application, as the necessary
+frequency of interactions can vary strongly from application to
+application. Instead, the gossiping implementation should focus solely
+on providing functions to select neighbours and to disseminate the
+information specified by the application.
+
+For the sake of flexibility, the gossiping implementation should also
+provide a way to select neighbours in a way that is not, or at least not
+completely, random. Examples include selecting a node from a subset of
+nodes filtered by a certain metric or, in some cases, directly selecting
+a specific single node.
+
+\subsection*{Implementation}
+\label{sub:implementation_gossiping}
+
+\subsubsection*{Announcement}
+\label{ssub:Announcement}
+After initialization, nodes will periodically call
+\lstinline!gossip_announce()! in order to announce their presence to
+their neighbours:
+
+\begin{lstlisting}
+int gossip_announce(void) {
+    char msg_buffer[strlen(PREAMBLE) + strlen(ANNOUNCE) + 1];
+    sprintf(msg_buffer, "%s%s", PREAMBLE, ANNOUNCE);
+    return gossip_send(NULL, msg_buffer, strlen(msg_buffer));
+}
+\end{lstlisting}
+
+Gossip messages in our implementation are always prefixed with a number
+of strings that specify their purpose. The preamble sigifies that the
+message is part of the gossip protocol (only messages carrying the
+gossip preamble are processed by the gossip implementation. If
+applications want to specifiy their own messages that do not use the
+gossiping infrastructure, they simply need to drop this preamble). The
+\lstinline!ANNOUNCE! string signifies that the message is an
+announcement.
+
+\lstinline!gossip_send()! takes care of low-level communications by
+handing the message over to the transceiver thread.
+
+\subsubsection*{Message handling}
+\label{ssub:Message_handling}
+The gossip message handler differentiates the various types of messages
+and acts accordingly. It also offers an interface for applications to
+define their own mesage handlers. Application messages are marked with
+the \lstinline!MSG! prefix and are handed over to the application
+message handler by the gossip message handler.
+
+Upon reception of an \lstinline!ANNOUNCE! message, a node immediately
+replies with an \lstinline!ANNOUNCE! of its own. This helps newly
+joining nodes quickly assemble a neighbour table of their vicinity.
+
+Further message handler functions will be explained later in the text at
+the appropriate points.
+
+\subsubsection*{Neighbour table}
+\label{ssub:neighbour_table}
+The neighbour table is a linked list that keeps information on all nodes
+that have recently been heard from. It offers a number of functions to
+retrieve and manipulate data. An entry consists of a node (represented
+by its UID) and a timestamp of the last message received from this node.
+
+Upon reception of any kind of gossip message, the message handler
+updates the neighbour table. The sender of the message is either added
+to the table or, if the entry already exists, its timestamp is reset. 
+
+Nodes periodically call \lstinline!gossip_cleanup()! in order to remove
+outdated entries from the neighbour table:
+
+\begin{lstlisting}
+void gossip_cleanup(void) {
+    gossip_node_t *node = 0;
+    item_t *cur = list_get_head(neighbours);
+    timex_t now;
+    vtimer_now(&now);
+    while (cur) {
+        node = (gossip_node_t*) list_get_value(cur);
+        if (now.seconds - node->last_recv > CLEANUP_THRESHOLD) {
+            if (gossip_on_remove_neighbour_handler) {
+                if (gossip_on_remove_neighbour_handler(node)) {
+                    DEBUG("D: forgetting about node %d by handlers choice\n", node->id);
+                    list_remove_item(neighbours, cur);
+                } else {
+                    DEBUG("D: keeping node %d by handlers choice\n", node->id);
+                }
+            } else {
+                DEBUG("D: forgetting about node %d\n", node->id);
+                list_remove_item(neighbours, cur);
+            }
+        } else {
+            DEBUG("D: will forget %i in %lu seconds\n", node->id,
+                (CLEANUP_THRESHOLD - now.seconds + node->last_recv));
+        }
+        cur = list_get_next(cur);
+    }
+}
+\end{lstlisting}
+
+\lstinline!gossip_cleanup()! iterates through the neighbour list and
+checks every entry's timestamp. If the timestamp is older than
+\lstinline!CLEANUP_THRESHOLD! (default: 10 seconds), then a removal
+process is initiated. The gossip framework allows the application to
+register an \lstinline!on_remove_neighbour_handler! that is called at
+this point if it exists. This grants the application two capabilities:
+It may prevent the cleanup function from removing an outdated node if it
+meets certain other requirements (\lstinline!cleanup! only removes the
+node if the \lstinline!on_remove_handler! allows it) and it may initiate
+further actions on the node before it is removed (finalization). Once
+the \lstinline!on_remove_handler! has been called and removal is
+allowed, the entry is removed from the neighbour list.
+
+The neighbour list should also offer a number of functions to select
+neighbours to gossip to. Currently, the only functions implemented are
+selecting by random and selecting the neighbour with the oldest
+timestamp, as these were sufficient for the applications we implemented.
+Future extensions should include an interface for applications to define
+their own neighbour selection strategies.
+
+\section*{Leader election}
+\label{sec:Leader_election}
+
+\subsection*{Protocol description}
+\label{sub:protocol_leader_election}
+
+\subsection*{Implementation}
+\label{sub:implementation_leader_election}
+
+\section*{Time synchronization}
+\label{sec:Time synchronization}
+
+\subsection*{Protocol description}
+\label{sub:protocol_time_synch}
+
+\subsection*{Implementation}
+\label{sub:implementation_time_synchronization}
+
+% \newpage
+
+% \section*{Timeline}
+% \label{sec:timeline}
+% \pgfmathsetmacro{\mintime}{0}
+% \pgfmathsetmacro{\maxtime}{13}
+% \newcommand{\timeunit}{Weeks}
+% \pgfmathtruncatemacro{\timeintervals}{13}
+% \pgfmathsetmacro{\scaleitemseparation}{4}
+% \pgfmathsetmacro{\timenodewidth}{2cm}
+% \newcounter{itemnumber}
+% \setcounter{itemnumber}{0}
+% \newcommand{\lastnode}{n-0}
+
+% \newcommand{\timeentry}[2]{% time, description
+% \stepcounter{itemnumber}
+% \node[below right,minimum width=\timenodewidth] (n-\theitemnumber) at (\lastnode.south west) {#2};
+% \node[right] at (n-\theitemnumber.east) {};
+
+% \edef\lastnode{n-\theitemnumber}
+
+% \expandafter\edef\csname nodetime\theitemnumber \endcsname{#1}
+% }
+
+% \newcommand{\drawtimeline}{%
+%     \draw[very thick,-latex] (0,0) -- ($(\lastnode.south west)-(\scaleitemseparation,0)+(0,-1)$);
+%     \ExtractCoordinate{n-\theitemnumber.south}
+%     \pgfmathsetmacro{\yposition}{\YCoord/28.452755}
+%     \foreach \x in {1,...,\theitemnumber}
+%     {   \pgfmathsetmacro{\timeposition}{\yposition/(\maxtime-\mintime)*\csname nodetime\x \endcsname}
+%         \draw (0,\timeposition) -- (0.5,\timeposition) -- ($(n-\x.west)-(0.5,0)$) -- (n-\x.west);
+%     }
+%     \foreach \x in {0,...,\timeintervals}
+%     {   \pgfmathsetmacro{\labelposition}{\yposition/(\maxtime-\mintime)*\x}
+%         \node[left] (label-\x) at (-0.2,\labelposition) {\x\ \timeunit};
+%         \draw (label-\x.east) -- ++ (0.2,0);
+%     }   
+% }
+
+% \begin{tikzpicture}
+% \node[inner sep=0] (n-0) at (\scaleitemseparation,0) {};
+% \timeentry{1.5}{Milestone 1: Protocol description for gossiping}
+% \timeentry{3.1}{Milestone 2: Implementation of gossiping}
+% \timeentry{3.6}{Milestone 3: Protocol description for leader election}
+% \timeentry{6.6}{Milestone 4: Implementation of leader election}
+% \timeentry{7.4}{Milestone 5: Protocol description for time
+% synchronization}
+% \timeentry{13}{Milestone 6: Implementation of time synchronization}
+% \drawtimeline
+% \end{tikzpicture}
+
+% \section*{Further work}
+% \label{sub:further_work}
+% If we manage to finish the time synchronization application within the
+% alotted time and still have a reasonable amount of time left, we might
+% turn our focus to security aspects of our implementation -- i.e., how we
+% can achieve trust between gossiping nodes and how to deal with
+% attackers.
+
+
+\end{document}
+
+\end{document}
