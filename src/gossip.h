@@ -34,7 +34,7 @@
 /*! Global ID of the Node. */
 uint32_t gossip_id;
 
-/*! List of possible neighbor selection strategies for
+/** List of possible neighbor selection strategies for
  *  gossip_get_neighbour() function
  */
 typedef enum gossip_strategy {
@@ -42,18 +42,18 @@ typedef enum gossip_strategy {
     OLDEST_FIRST
 } gossip_strategy_t;
 
-/*! This struct describes an entry in the neigbour list
+/** This struct describes an entry in the neigbour list
  */
 typedef struct gossip_node {
-    /*! ID of the node. */
+    /** ID of the node. */
     uint16_t id;
-    /*! timestamp since last message send to node. */
+    /** timestamp since last message send to node. */
     uint32_t last_send;
-    /*! timestamp since last message recieved from node. */
+    /** timestamp since last message recieved from node. */
     uint32_t last_recv;
 } gossip_node_t;
 
-/*! This struct describes a list of nodes as returned by
+/** This struct describes a list of nodes as returned by
  *  gossip_get_all_neighbours()
  */
 typedef struct gossip_node_list {
@@ -66,36 +66,36 @@ typedef struct gossip_node_list {
 char gossip_radio_stack_buffer[RADIO_STACK_SIZE];
 
 
-/*! \brief send hello message to broadcast adress
+/** \brief send hello message to broadcast adress
  *         (sould be called on a regular basis)
  *  \return 0 on success, error code in case of failure
  */ 
 int gossip_announce(void);
 
-/*! \brief register the message handler and init gossip system
+/** \brief register the message handler and init gossip system
  *  \param id Global ID to set
  *  \param transceiver_type transceiver type
  *  \return 0 on success, error code in case of failure
  */
 int gossip_init(uint16_t id, transceiver_type_t transceiver_type);
 
-/*! \brief get a list of all known neighbours
+/** \brief get a list of all known neighbours
  *  \return node list on success, NULL in case of failure
  */
 gossip_node_list_t* gossip_get_all_neighbours(void);
 
-/*! \brief free a node list returned by gossip_get_all_neighbours()
+/** \brief free a node list returned by gossip_get_all_neighbours()
  *  \param nl node list to be freed
  */
 void gossip_free_node_list(gossip_node_list_t* nl);
 
-/*! \brief look through the list for a node with id
+/** \brief look through the list for a node with id
  *  \param id ID of node in question
  *  \return pointer to that node on success, NULL in case of failure
  */
 gossip_node_t* gossip_find_node_by_id(uint16_t id);
 
-/*! \brief choose specific node by some strategy
+/** \brief choose specific node by some strategy
  *  \param strategy strategy by witch node should be chosen
  *  \return node on success, NULL in case of failure
  */
@@ -106,13 +106,13 @@ gossip_node_t* gossip_get_neighbour(gossip_strategy_t strategy);
  */
 gossip_node_t* gossip_get_neighbour_random(void);
 
-/*! \brief choose oldest node from neighbour list
+/** \brief choose oldest node from neighbour list
  *  \return node on success, NULL in case of failure
  */
 gossip_node_t* gossip_get_neighbour_oldest_first(void);
 
 
-/*! \brief send a message to a given node
+/** \brief send a message to a given node
  *  \param node node to send message to
  *  \param gossip_message data to send
  *  \param len length of data to send
@@ -120,7 +120,7 @@ gossip_node_t* gossip_get_neighbour_oldest_first(void);
  */
 int gossip_send(gossip_node_t* node, void *gossip_message, int len);
 
-/*! \brief registers callback for received application messages
+/** \brief registers callback for received application messages
  *  \param handle function pointer for callback function that handels
  *         incomming messages
  * 
@@ -128,7 +128,7 @@ int gossip_send(gossip_node_t* node, void *gossip_message, int len);
  */
 void gossip_register_msg_handler(void (*handle) (void*,size_t,uint16_t));
 
-/*! \brief removes neighbours from global list after CLEANUP_THRESHOLD
+/** \brief removes neighbours from global list after CLEANUP_THRESHOLD
  *         time
  */
 void gossip_cleanup(void);
@@ -136,7 +136,7 @@ void gossip_cleanup(void);
 // Hooks
 // =====
 
-/*! \brief register a handler that is run upon removing a node from the
+/** \brief register a handler that is run upon removing a node from the
  *         neighbour list
  *  \param handle function pointer for callback function that decides if
  *         a node should be removed from neighbor list or not
