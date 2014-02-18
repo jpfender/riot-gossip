@@ -240,21 +240,325 @@ their own neighbour selection strategies.
 
 \section*{Leader election}
 \label{sec:Leader_election}
+Once again taking the
+Wikipedia\footnote{\url{https://en.wikipedia.org/wiki/Leader_election}}
+article as a starting point, we define leader election as the process of
+designating a single node as the organizer of some task that is to be
+distributed among several nodes.  Before the task is begun, all nodes
+are either unaware which node will serve as the leader of the task, or
+unable to communicate with the current leader. After a leader election
+has been run, however, each node recognizes a particular, unique node as
+the leader -- provided the network has not been partitioned in the
+meantime.
 
 \subsection*{Protocol description}
 \label{sub:protocol_leader_election}
 
+\subsubsection*{The ``greedy`` strategy}
+\label{ssub:greedy_leader_election}
+Since we are dealing with potentially unstable networks prone to packet
+loss and (temporary) partitioning, we decided on a leader election
+scheme that strives to elect the locally optimal leader. This means that
+upon initiating a leader election, each node will start by electing
+itself as the leader and gossiping its ``candidacy`` to its neighbours.
+When a node receives a leader election message containing a candidate,
+it compares this candidate to the candidate it currently considers to be
+the leader. If the new candidate is ``better`` than the current one
+(according to the leader election metric that is currently in place --
+see below), it immediately assumes that candidate as its new leader. If
+the new candidate is ``worse`` than the current one it immediately
+replies with its own leader. This approach -- basic gossiping combined
+with immediate, direct responses -- ensures that a leader is rapidly
+agreed upon.
+
+\subsubsection*{Metrics for leader election}
+\label{ssub:leader_election_metrics}
+Since in most networks, the nodes will be more or less identical, some
+method is needed in order to break the symmetry among them. For an
+application that simply needs one node to be the leader without placing
+any specific restraints on it, we can simply use the nodes' unique IDs
+and elect the node with the highest ID. However, some applications may
+want to elect a node with specific qualities -- the best connected node,
+the node with the highest throughput, the node closest to a certain
+location, the node with the right environment parameters etc. Thus, the
+leader election should ideally provide an interface for applications to
+define their own metrics by which a leader is elected.
+
+\subsubsection*{Partitioning problem}
+\label{ssub:partitioning_problem}
+As stated above, we are dealing with potentially unstable networks prone
+to packet loss and partitioning. Therefore, we need to weaken the
+original restraints somewhat such that during leader election, each node
+strives to elect the optimal leader within its connected partition of
+a potentially larger network. Since a partitioned network can be viewed
+as a set of several smaller, unconnected networks for all intents and
+purposes, it makes sense for these subnetworks to elect their own
+leaders as long as they remain partitioned. By periodically
+re-initiating the leader election, partitions can agree on a common
+leader on the event of their reunion.
+
 \subsection*{Implementation}
 \label{sub:implementation_leader_election}
 
+\subsubsection*{Initial leader election}
+\label{ssub:initial_leader_election}
+After each node has finished initialization, announced itself to its
+neighbours and built a neighbour table, it initiates a leader election
+and tries to vote for itself:
+
+\begin{lstlisting}
+int leader_init(){
+    char msg_buffer[strlen(PREAMBLE) + strlen(MSG) + strlen(LE) + UID_LEN + ROUND_LEN];
+    gossip_node_t* node;
+
+    node = gossip_get_neighbour(RANDOM);
+    if(!node){
+        WARN("W: no non-leader neighbours, election init failed.\n");
+        return 1;
+    }
+
+    leader_set_leader( gossip_id );
+
+    DEBUG("D: initial leader: %d\n",leader);
+    DEBUG("D: round: %i\n", election_round);
+    sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
+                PREAMBLE, MSG, LE, election_round, leader);
+
+    return gossip_send(node, msg_buffer, strlen(msg_buffer));
+}
+\end{lstlisting}
+
+If a node receives a leader election message, it checks its contents to
+decide how it should act on it:
+
+\begin{lstlisting}
+void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
+
+    strncpy( round_buffer, (char*)msg_text+strlen(LE) , sizeof(round_buffer) );
+    round = atol(round_buffer);
+
+    DEBUG("D: got round %i (current round %i)\n",round,election_round);
+
+    // a new election round, invalidate leader and elect the next one
+    if(round > election_round) {
+        DEBUG("D: got new election round %i (was %i)\n",round,election_round);
+        election_round = round;
+        leader_init();
+        free(msg_buffer);
+        return;
+    }
+
+    // got leader from an old round, inform sending node
+    if(round < election_round) {
+        DEBUG("D: got round %i (current is %i) informing sender\n",round,election_round);
+        sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
+                    PREAMBLE, MSG, LE, election_round, leader);
+        node = gossip_find_node_by_id(src);
+        gossip_send(node, msg_buffer, strlen(msg_buffer));
+        free(msg_buffer);
+        return;
+    }
+
+    received_leader = atol((char*)msg_text+strlen(LE)+UID_LEN);
+    DEBUG("D: received candidate: %i\n",received_leader);
+
+    /* use MAX_UID as ACK identifier */
+    if(received_leader == MAX_UID){
+        free(msg_buffer);
+        return;
+    }
+
+    if(received_leader < leader ){
+        DEBUG("D: discarding candidate and informing sender\n");
+        sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
+                    PREAMBLE, MSG, LE, round, leader);
+    }
+
+    // update leader if we receive a better candidate
+    if(received_leader >= leader ){
+        DEBUG("D: adding a new, better leader\n");
+        leader_set_leader(received_leader);
+        sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
+                    PREAMBLE, MSG, LE, round, MAX_UID);
+    }
+
+    node = gossip_find_node_by_id(src);
+    gossip_send(node, msg_buffer, strlen(msg_buffer));
+
+}
+\end{lstlisting}
+
+We can see the logic from the protocol description implemented here --
+the node checks whether the proposed candidate is better or worse than
+its current leader and acts accordingly.
+
+The above listing also introduces the concept of leader election rounds,
+which is described in detail below.
+
+\subsubsection*{Leader election rounds}
+\label{ssub:leader_election_rounds}
+Whenever we lose contact to the leader, we have to assume that the
+leader has failed, which means that we need to elect a new one. The
+easiest way to immediately recognize this loss of contact is to define
+an \lstinline!on_remove_neighbour_handler! (see above) that triggers
+upon cleanup of the neighbour table. If the node that is about to be
+removed is the current leader, we trigger a new leader election round.
+This means that we initiate a new leader election just like before, but
+with an increased round counter. The round counter is always included in
+leader election messages and checked by the leader election message
+handler (see above). If a node receives a leader election message
+containing a counter that is higher than its own counter, it knows that
+a new round of leader elections has been initiated and discards its
+current leader as outdated. If the received round counter is equal to
+the current round counter, everything proceeds as normal, and if it is
+lower, the sending node is immediately informed that a new round has
+already been started. This helps nodes keep up to date with the events
+in the network and to know whether they should act upon a leader
+election message.
+
 \section*{Time synchronization}
 \label{sec:Time synchronization}
+Time synchronization is an important problem in the field of distributed
+systems. Even when initially set accurately, real clocks will differ
+after some amount of time due to clock drift, caused by clocks counting
+time at slightly different rates. This problem obviously takes on more
+complexity with a rising number of nodes participating in a network. The
+simplest solution is always a centralized one, with a time server
+dictating the system time to all network participants. Even though we
+will be dealing mainly with decentralized systems, we can approximate
+this solution by using our leader election scheme to elect a node that
+will act as the time server.
 
 \subsection*{Protocol description}
 \label{sub:protocol_time_synch}
 
+Once a node is sure that it is currently the leader of its network, it
+may initiate time synchronization. This means that it will choose
+a neighbour at random and gossip its current timestamp to that node.
+Upon receiving this timestamp, the node notes its own timestamp and
+pings the time server back. The time server in turn answers with another
+timestamp. The receiving node once again notes the time. It now has four
+timestamps, which it can use to calculate its own offset to the master
+and adjust its own clock accordingly. Once a node has thus adjusted its
+own clock, it may in turn start synchronizing other nodes in its
+vicinity, thus ensuring that not only nodes directly connected to the
+leader are synchronized. Synchronization should be initiated
+periodically to counteract clock drift.
+
 \subsection*{Implementation}
 \label{sub:implementation_time_synchronization}
+
+\subsubsection*{Problems}
+\label{ssub:timesync_problems}
+During the implementation, we encountered several problems. Chief among
+these was the fact that it is not possible to set the hardware clock on
+the MSB-A2 boards. Thus, to demonstrate our time synchronization proof
+of concept, we needed to approach the concept in a different fashion. As
+we wanted to demonstrate synchronization across the network by having
+the nodes' LEDs blink in usion, we decided on the following workaround:
+Nodes would blink their LEDs on every full second. Synchronization is
+achieved by measuring the offset to the leader and adding it to the wait
+time between blinks, thus ensuring that nodes blink at the same time as
+the leader.
+
+\subsubsection*{Initialisation}
+\label{ssub:timesync_initialisation}
+We implement our solution by having the time server send out a time
+synchronization message on the full second:
+
+\begin{lstlisting}
+int timesync_init() {
+
+    node = gossip_get_neighbour(RANDOM);
+
+    msg_buffer = malloc(strlen(PREAMBLE) + strlen(MSG) + strlen(TS) + strlen(SYNC) + UID_LEN + 8);
+
+    sprintf(msg_buffer, "%s%s%s%s%0" UID_LEN_STR "i%08lu", PREAMBLE, MSG, TS, SYNC, (int) gossip_id,
+            master_offset);
+
+    /* timesync init and blink loop need to be synced locally, wait for usec=0 */
+    rtc_time(&tiv);
+    vtimer_usleep( (uint32_t)(( 1000*1000 - tiv.tv_usec ) * VTIMER_FACTOR ));
+
+    gossip_send(node, msg_buffer, strlen(msg_buffer));
+
+    rtc_time(&tiv);
+    return 0;
+}
+\end{lstlisting}
+
+If a node receives a \lstinline!SYNC! message, it checks whether it was
+sent by the node it recognizes as the leader and, if this is the case,
+records the received and the local timestamp and responds with
+a \lstinline!DELAYREQ! message:
+
+\begin{lstlisting}
+if (!strncmp(rcv_buffer, SYNC, strlen(SYNC))) {
+
+    if( leader_is_leader() ){
+        // master does not want to update its time
+        return;
+    }
+    t1_local = tiv.tv_usec;
+
+    // If message comes from the leader (directly or indirectly),
+    // record master and local timestamps and initiate ping-pong
+    if (ts_src == leader_get_leader()) {
+
+        t1_master = atoi(rcv_buffer + strlen(SYNC) + UID_LEN);
+        rtc_time(&tiv);
+
+        gossip_node_t* node = gossip_find_node_by_id(src);
+        gossip_send(node, DELAY_REQ_BUFFER, strlen(DELAY_REQ_BUFFER));
+
+    }
+}
+\end{lstlisting}
+
+When the time server receives a \lstinline!DELAYREQ! message, it replies
+with a \lstinline!DELAYRESP! and another timestamp:
+
+\begin{lstlisting}
+else if (!strncmp(rcv_buffer, DELAYREQ, strlen(DELAYREQ))) {
+
+    msg_buffer = malloc(strlen(PREAMBLE) + strlen(MSG) + strlen(TS) + strlen(DELAYRESP) + 8);
+
+    sprintf(msg_buffer, "%s%s%s%s%08lu", PREAMBLE, MSG, TS, DELAYRESP, tiv.tv_usec);
+
+    gossip_node_t* node = gossip_find_node_by_id(src);
+    gossip_send(node, msg_buffer, strlen(msg_buffer));
+}
+\end{lstlisting}
+
+Finally, upon receiving the \lstinline!DELAYRESP! message, the receiving
+node can calculate its own offset:
+
+\begin{lstlisting}
+else if (!strncmp(rcv_buffer, DELAYRESP, strlen(DELAYRESP))) {
+
+    t2_local = tiv.tv_usec;
+    t2_master = atoi(rcv_buffer + strlen(DELAYRESP));
+
+    // Calculate offset (half RTT + our local time at first arrival of sync msg) - really?
+    rtt_local   = t2_local > t1_local ? t2_local - t1_local : (1000000 - t1_local) + t2_local;
+    rtt_master  = t2_master > t1_master ? t2_master - t1_master : (1000000 - t1_master) + t2_master;
+
+    /* average over both observed roundtrips and assuming both direction took the same time
+     * divide by two to get the offset of master and local */
+    tt = (rtt_local + rtt_master)/2/2;
+    master_offset = (t1_local > tt ? t1_local - tt : (1000*1000) + t1_local - tt);
+
+    new_precision = ABS( (t1_local - t2_local ) - (t2_master - t1_master) );
+
+    timesync_set_trusted(1);
+
+}
+\end{lstlisting}
+
+This offset is then applied to the node's own blink thread, bringing it
+into synchronization with the leader. The node then sets its own
+\lstinline!trusted! flag, indicating that it has been synchronized with
+the time server and is ready to synchronize its own neighbours.
 
 % \newpage
 
