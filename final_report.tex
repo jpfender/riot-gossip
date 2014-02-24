@@ -560,65 +560,106 @@ into synchronization with the leader. The node then sets its own
 \lstinline!trusted! flag, indicating that it has been synchronized with
 the time server and is ready to synchronize its own neighbours.
 
-% \newpage
+\section*{Working on the project} % XXX need a better name for this section
+\label{sec:working_on_project}
+We decided very early on that we would divide our project into the three
+phases described above. This allowed us to logically structure our work
+and break it down into easily manageable chunks. The first week was
+spent actually deciding what the second and third phase would be, i.e.
+what applications we wanted to build on top of our gossiping platform.
+Discarded ideas included aggregation of sensor information such as
+temperature and humidity. However, we quickly decided on something that
+we could actually demonstrate using just the LEDs on the board, as noted
+in the project goals, for which leader election and time synchronization
+seemed the best choices.
 
-% \section*{Timeline}
-% \label{sec:timeline}
-% \pgfmathsetmacro{\mintime}{0}
-% \pgfmathsetmacro{\maxtime}{13}
-% \newcommand{\timeunit}{Weeks}
-% \pgfmathtruncatemacro{\timeintervals}{13}
-% \pgfmathsetmacro{\scaleitemseparation}{4}
-% \pgfmathsetmacro{\timenodewidth}{2cm}
-% \newcounter{itemnumber}
-% \setcounter{itemnumber}{0}
-% \newcommand{\lastnode}{n-0}
+\subsubsection*{Work distribution}
+\label{ssub:work_distribution}
+After handing in our project proposal, we started work according to the
+timeline we had set for ourselves. This meant formulating the protocol
+for a phase, implementing it and then moving to the next phase. We
+discussed the protocols in group meetings; we were always able to
+finalize them after one meeting. Work on the implementation was then
+distributed dynamically; using our protocol descriptions, we formulated
+TODOs and priorities and then distributed these amongst ourselves. We
+had both regular and irregular meetings, depending on how far along in
+our timeline we were. Between meetings, we worked more or less
+individually with electronic communications. The regular meetings served
+to bring the other members up to date on one's own work and to discuss
+problems. Irregular meetings were called when we encountered problems
+that we wanted to tackle as a team and also served as brainstorming
+sessions. As all of us also had other obligations during the semester
+(work, other classes etc.), we also sometimes met in pairs, but took
+care to communicate our choices to the missing member.
 
-% \newcommand{\timeentry}[2]{% time, description
-% \stepcounter{itemnumber}
-% \node[below right,minimum width=\timenodewidth] (n-\theitemnumber) at (\lastnode.south west) {#2};
-% \node[right] at (n-\theitemnumber.east) {};
+\subsubsection*{Problems}
+\label{ssub:problems}
+Obviously, a project never runs as smoothly as one envisions it when
+formulating milestones, and part of the point of a college software
+project is to learn how to deal with problems and setbacks in
+a non-critical work environment. We encountered our fair share of these
+problems but were always able to deal with them.
 
-% \edef\lastnode{n-\theitemnumber}
+The bulk of our implementation was done on the native port of RIOT,
+which we chose because it would allow us to develop on x86 and not spend
+valuable development time continuously flashing hardware. It also
+allowed us to simulate larger networks than we could have built using
+the hardware available to us. The native port, however, came with its
+own share of problems. It is a relatively new addition to the RIOT
+project and therefore still has a few quirks and bugs. We communicated
+a lot with Ludwig Ortmann, the RIOT team member mainly responsible for
+the native port, during this time. For some bugs, he pointed us to
+workarounds that allowed us to carry on with our work. Other bugs, both
+those already known to the RIOT team and those discovered by us, were
+fixed during the course of our project.
 
-% \expandafter\edef\csname nodetime\theitemnumber \endcsname{#1}
-% }
+The switch from native port to real hardware, once our implementation
+neared completion, was not exactly smooth. First of all, actually
+getting the MSB-A2 boards we wanted to test on proved difficult as the
+AG Technische Informatik doesn't have a lot of them and most were
+already being used in other projects. After some brief and unsuccessful
+experimentation with AVS-Extrem boards borrowed from the VIVE project,
+we were lucky enough to get three MSB-A2 boards from the RIOT team.
 
-% \newcommand{\drawtimeline}{%
-%     \draw[very thick,-latex] (0,0) -- ($(\lastnode.south west)-(\scaleitemseparation,0)+(0,-1)$);
-%     \ExtractCoordinate{n-\theitemnumber.south}
-%     \pgfmathsetmacro{\yposition}{\YCoord/28.452755}
-%     \foreach \x in {1,...,\theitemnumber}
-%     {   \pgfmathsetmacro{\timeposition}{\yposition/(\maxtime-\mintime)*\csname nodetime\x \endcsname}
-%         \draw (0,\timeposition) -- (0.5,\timeposition) -- ($(n-\x.west)-(0.5,0)$) -- (n-\x.west);
-%     }
-%     \foreach \x in {0,...,\timeintervals}
-%     {   \pgfmathsetmacro{\labelposition}{\yposition/(\maxtime-\mintime)*\x}
-%         \node[left] (label-\x) at (-0.2,\labelposition) {\x\ \timeunit};
-%         \draw (label-\x.east) -- ++ (0.2,0);
-%     }   
-% }
+Moving to real hardware meant that we now had to deal with the physical
+reality embedded programmers face -- stack sizes were suddenly to small
+and the whole range of physical layer problems such as packet loss and
+collisions became significant. Thus, we spent a good deal of the time
+after the switch mitigating these problems and adjusting our
+implementation to conform to embedded reality. However, we were still
+able to overcome all of these problems and deliver a working demo in
+time for the final presentation.
 
-% \begin{tikzpicture}
-% \node[inner sep=0] (n-0) at (\scaleitemseparation,0) {};
-% \timeentry{1.5}{Milestone 1: Protocol description for gossiping}
-% \timeentry{3.1}{Milestone 2: Implementation of gossiping}
-% \timeentry{3.6}{Milestone 3: Protocol description for leader election}
-% \timeentry{6.6}{Milestone 4: Implementation of leader election}
-% \timeentry{7.4}{Milestone 5: Protocol description for time
-% synchronization}
-% \timeentry{13}{Milestone 6: Implementation of time synchronization}
-% \drawtimeline
-% \end{tikzpicture}
+\section*{Evaluation \& Conclusion}
+\label{sec:evaluation_conclusion}
+Seeing as we met all of the goals we had originally set for ourselves
+and delivered a working demo that did what it was supposed to do, we
+would say that our project was definitely a success and we are very
+satisified with the results. However, not everything worked as
+originally planned. Our biggest mistake was probably making the switch
+to the physical platform far too late. If we had switched earlier, maybe
+some time during the implementation of leader election, we would have
+had more time to accustom ourselves to the idiosyncracies of the MSB-A2
+board and the physical medium, which would have saved us a lot of time
+rewriting code that worked on the native port but was useless on the
+MSB-A2. This could have prevented some stress during the last two weeks
+before the final demonstration and would have made for more relaxed
+development.
 
-% \section*{Further work}
-% \label{sub:further_work}
-% If we manage to finish the time synchronization application within the
-% alotted time and still have a reasonable amount of time left, we might
-% turn our focus to security aspects of our implementation -- i.e., how we
-% can achieve trust between gossiping nodes and how to deal with
-% attackers.
+We also did not have enough time for the ``bonus`` goal we mentioned in
+our original proposal -- encryption and security. However, this was
+always an optimistic plan formulated for the event that everything went
+smoother than expected and we found ourselves with free time on our
+hands. Thus, we are not really disappointed that we didn't reach this
+point, although it would have been very interesting.
 
+In conclusion, we learnt a lot about the RIOT platform and the
+limitations of embedded programming, as well as the intricate evils of
+race conditions (there were a lot of those) and how to deal with them.
+We hope that our project will be integrated into the RIOT/projects
+repository as has been signaled by the RIOT team, thus making our
+project something we made not only for ourselves but also for other RIOT
+developers to build upon.
 
 \end{document}
 
