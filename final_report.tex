@@ -36,7 +36,7 @@
 
 \usepackage{url}
 
-\author{Michael Krause (), Robin Nehls (), Jakob Pfender (4282720)}
+\author{Michael Krause, Robin Nehls, Jakob Pfender}
 \title{Softwareprojekt Mobilkommunikation:\\Gossiping on Mobile
 Devices\\Final Project Report}
 
@@ -189,6 +189,8 @@ to the table or, if the entry already exists, its timestamp is reset.
 Nodes periodically call \lstinline!gossip_cleanup()! in order to remove
 outdated entries from the neighbour table:
 
+\newpage
+
 \begin{lstlisting}
 void gossip_cleanup(void) {
     gossip_node_t *node = 0;
@@ -284,6 +286,8 @@ location, the node with the right environment parameters etc. Thus, the
 leader election should ideally provide an interface for applications to
 define their own metrics by which a leader is elected.
 
+\newpage
+
 \subsubsection*{Partitioning problem}
 \label{ssub:partitioning_problem}
 As stated above, we are dealing with potentially unstable networks prone
@@ -328,6 +332,8 @@ int leader_init(){
 }
 \end{lstlisting}
 
+\newpage
+
 If a node receives a leader election message, it checks its contents to
 decide how it should act on it:
 
@@ -336,8 +342,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     strncpy( round_buffer, (char*)msg_text+strlen(LE) , sizeof(round_buffer) );
     round = atol(round_buffer);
-
-    DEBUG("D: got round %i (current round %i)\n",round,election_round);
 
     // a new election round, invalidate leader and elect the next one
     if(round > election_round) {
@@ -350,7 +354,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
 
     // got leader from an old round, inform sending node
     if(round < election_round) {
-        DEBUG("D: got round %i (current is %i) informing sender\n",round,election_round);
         sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
                     PREAMBLE, MSG, LE, election_round, leader);
         node = gossip_find_node_by_id(src);
@@ -360,7 +363,6 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     }
 
     received_leader = atol((char*)msg_text+strlen(LE)+UID_LEN);
-    DEBUG("D: received candidate: %i\n",received_leader);
 
     /* use MAX_UID as ACK identifier */
     if(received_leader == MAX_UID){
@@ -369,14 +371,12 @@ void leader_handle_msg(void* msg_text, size_t size, uint16_t src){
     }
 
     if(received_leader < leader ){
-        DEBUG("D: discarding candidate and informing sender\n");
         sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
                     PREAMBLE, MSG, LE, round, leader);
     }
 
     // update leader if we receive a better candidate
     if(received_leader >= leader ){
-        DEBUG("D: adding a new, better leader\n");
         leader_set_leader(received_leader);
         sprintf(msg_buffer, "%s%s%s%0" ROUND_LEN_STR "i%0" UID_LEN_STR "i",
                     PREAMBLE, MSG, LE, round, MAX_UID);
@@ -429,6 +429,8 @@ will be dealing mainly with decentralized systems, we can approximate
 this solution by using our leader election scheme to elect a node that
 will act as the time server.
 
+\newpage
+
 \subsection*{Protocol description}
 \label{sub:protocol_time_synch}
 
@@ -460,6 +462,8 @@ Nodes would blink their LEDs on every full second. Synchronization is
 achieved by measuring the offset to the leader and adding it to the wait
 time between blinks, thus ensuring that nodes blink at the same time as
 the leader.
+
+\newpage
 
 \subsubsection*{Initialisation}
 \label{ssub:timesync_initialisation}
@@ -515,6 +519,8 @@ if (!strncmp(rcv_buffer, SYNC, strlen(SYNC))) {
 }
 \end{lstlisting}
 
+\newpage
+
 When the time server receives a \lstinline!DELAYREQ! message, it replies
 with a \lstinline!DELAYRESP! and another timestamp:
 
@@ -559,6 +565,8 @@ This offset is then applied to the node's own blink thread, bringing it
 into synchronization with the leader. The node then sets its own
 \lstinline!trusted! flag, indicating that it has been synchronized with
 the time server and is ready to synchronize its own neighbours.
+
+\newpage
 
 \section*{Working on the project} % XXX need a better name for this section
 \label{sec:working_on_project}
